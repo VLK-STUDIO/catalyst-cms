@@ -1,21 +1,7 @@
 import { headers } from "next/headers";
 
-export const getLivePreviewUrlForDoc = (
-  doc: any,
-  unparsedPreviewUrl: string
-) => {
-  const previewUrl = unparsedPreviewUrl.replace(
-    /\/:([a-zA-Z0-9_]+)/g,
-    (match, p1) => {
-      return doc[p1];
-    }
-  );
-
-  return previewUrl;
-};
-
-export const getLivePreviewDataForCollection = (collection: string) => {
-  const data = headers().get(`x-catalyst-live-preview-${collection}`);
+export const getLivePreviewDataForCollection = (typeName: string) => {
+  const data = headers().get(`x-catalyst-live-preview-${typeName}`);
 
   if (!data) {
     return null;

@@ -1,9 +1,16 @@
 import { ObjectId } from "mongodb";
 import { createCatalystAuthObject } from "./auth";
 
+export type UserCatalystConfig = Omit<CatalystConfig, "collections"> & {
+  collections?: CatalystConfig["collections"];
+};
+
 export type CatalystConfig = {
   collections: {
     [K: string]: CatalystCollection;
+  };
+  globals: {
+    [K: string]: CatalystGlobal;
   };
   i18n: {
     defaultLocale: string;
@@ -14,6 +21,14 @@ export type CatalystConfig = {
       [K: string]: CatalystField;
     };
   };
+};
+
+export type CatalystDataType = CatalystCollection | CatalystGlobal;
+
+export type CatalystGlobal = {
+  fields: Record<string, CatalystField>;
+  label: string;
+  previewUrl?: string;
 };
 
 export type CatalystCollection = {
@@ -35,12 +50,12 @@ export type CatalystFieldBase = {
 
 export type CatalystTextField = CatalystFieldBase & {
   type: "text";
-  localised?: boolean;
+  localized?: boolean;
 };
 
 export type CatalystRichTextField = CatalystFieldBase & {
   type: "richtext";
-  localised?: boolean;
+  localized?: boolean;
 };
 
 export type CatalystReferenceField = {
@@ -50,19 +65,6 @@ export type CatalystReferenceField = {
   exposedColumn?: string;
 };
 
-export type SerializableCatalystConfig = Omit<CatalystConfig, "collections"> & {
-  collections: Record<string, SerializableCatalystCollection>;
-};
-
-export type SerializableCatalystCollection = Omit<
-  CatalystCollection,
-  "fields"
-> & {
-  fields: Record<string, SerializableCatalystField>;
-};
-
-export type SerializableCatalystField = Omit<CatalystField, "schema">;
-
 export type ComputedCollectionFields<T extends CatalystCollection> = {
   [K in keyof T["fields"] | "_id"]: K extends "_id"
     ? ObjectId
@@ -71,22 +73,27 @@ export type ComputedCollectionFields<T extends CatalystCollection> = {
     : never;
 };
 
-export type CatalystData<C extends CatalystConfig> = Record<
-  keyof C["collections"],
-  {
-    find: () => Promise<
-      ComputedCollectionFields<C["collections"][keyof C["collections"]]>[]
-    >;
+export type CatalystDataObject<C extends CatalystConfig> =
+  CatalystCollectionDataObject<C["collections"]> &
+    CatalystGlobalsDataObject<C["globals"]>;
+
+export type CatalystCollectionDataObject<
+  C extends CatalystConfig["collections"]
+> = {
+  [K in keyof C]: {
+    find: () => Promise<ComputedCollectionFields<C[K]>[]>;
     findOne: (
       id: string,
       locale?: string,
-      options?: {
-        delocalise?: boolean;
-      }
-    ) => Promise<
-      ComputedCollectionFields<C["collections"][keyof C["collections"]]>
-    >;
-  }
->;
+      options?: { delocalize: boolean }
+    ) => Promise<ComputedCollectionFields<C[K]>>;
+  };
+};
+
+export type CatalystGlobalsDataObject<C extends CatalystConfig["globals"]> = {
+  [K in keyof C]: {
+    get: () => Promise<ComputedCollectionFields<C[K]>>;
+  };
+};
 
 export type CatalystAuth = ReturnType<typeof createCatalystAuthObject>;

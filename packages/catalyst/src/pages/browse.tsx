@@ -1,10 +1,14 @@
 import { IconPlus } from "@tabler/icons-react";
-import { CatalystCollection, CatalystConfig, CatalystData } from "../types";
+import {
+  CatalystCollection,
+  CatalystConfig,
+  CatalystDataObject,
+} from "../types";
 import { CurrentSubrouteLink } from "../components/CurrentSubrouteLink";
 
 type Props<C extends CatalystConfig> = {
   collection: CatalystCollection & { name: string };
-  data: CatalystData<C>;
+  data: CatalystDataObject<C>;
 };
 
 export async function BrowsePage<C extends CatalystConfig>(props: Props<C>) {

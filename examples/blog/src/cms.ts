@@ -13,13 +13,28 @@ export const cms = createCatalyst({
         content: {
           type: "richtext",
           label: "Content",
-          localised: true,
+          localized: true,
         },
         author: {
           type: "reference",
           label: "Author",
           collection: "users",
           exposedColumn: "fullName",
+        },
+      },
+    },
+  },
+  globals: {
+    seo: {
+      label: "SEO",
+      fields: {
+        title: {
+          type: "text",
+          label: "Title",
+        },
+        description: {
+          type: "text",
+          label: "Description",
         },
       },
     },

@@ -1,13 +1,13 @@
-import { CatalystCollection } from "../../types";
+import { CatalystCollection, CatalystGlobal } from "../../types";
 import { FormField } from "./types";
 import mongoClientPromise from "../../mongo";
 
-export function getFormFieldsFromCollection(
-  collection: CatalystCollection,
+export function getFormFieldsFromDataType(
+  dataType: CatalystCollection | CatalystGlobal,
   data: Record<string, any> = {}
 ): Promise<FormField[]> {
   return Promise.all(
-    Object.entries(collection.fields).map(async ([key, field]) => {
+    Object.entries(dataType.fields).map(async ([key, field]) => {
       const { type, label } = field;
 
       switch (type) {

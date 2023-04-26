@@ -5,6 +5,7 @@ import {
   isCollectionEntryCreationEndpoint,
   handleCollectionEntryCreation,
 } from "./collectionEntryCreation";
+import { isGlobalUpsertEndpoint, handleGlobalUpsert } from "./globalUpsert";
 import {
   isCollectionEntryUpdateEndpoint,
   handleCollectionEntryUpdate,
@@ -22,12 +23,15 @@ export function createRootEndpoint<C extends CatalystConfig>(config: C) {
 
     // Handle Catalyst routes
     if (isCollectionEntryCreationEndpoint(req))
-      await handleCollectionEntryCreation(config, req, res);
+      return await handleCollectionEntryCreation(config, req, res);
     else if (isCollectionEntryUpdateEndpoint(req))
-      await handleCollectionEntryUpdate(config, req, res);
-    else
+      return await handleCollectionEntryUpdate(config, req, res);
+    else if (isGlobalUpsertEndpoint(req))
+      return await handleGlobalUpsert(config, req, res);
+    else {
       return res.status(404).json({
         message: "Route not found",
       });
+    }
   };
 }

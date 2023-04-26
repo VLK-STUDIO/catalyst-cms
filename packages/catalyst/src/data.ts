@@ -1,29 +1,30 @@
 import { ObjectId } from "mongodb";
 import mongoClientPromise from "./mongo";
-import { CatalystConfig, CatalystData } from "./types";
-import { delocalisePayload } from "./utils";
+import {
+  CatalystCollectionDataObject,
+  CatalystConfig,
+  CatalystDataObject,
+  CatalystGlobalsDataObject,
+} from "./types";
+import { delocalizePayload } from "./utils";
 import { getLivePreviewDataForCollection } from "./preview";
 
 export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
-  return Object.keys(config.collections).reduce((acc, key) => {
+  const { collections = {}, globals = {} } = config;
+
+  const collectionsDataObject = Object.keys(collections).reduce((acc, key) => {
     return {
       ...acc,
       [key]: {
         find: async (locale?: string) => {
-          const livePreviewData = getLivePreviewDataForCollection(key);
-
-          if (livePreviewData) {
-            return [livePreviewData];
-          }
-
           const client = await mongoClientPromise;
 
           const docs = await client.db().collection(key).find().toArray();
 
           return docs.map((doc) =>
-            delocalisePayload(
+            delocalizePayload(
               doc,
-              config.collections[key].fields,
+              collections[key].fields,
               locale || config.i18n.defaultLocale,
               config.i18n.defaultLocale
             )
@@ -33,9 +34,15 @@ export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
           id: string,
           locale?: string,
           options: {
-            delocalise: boolean;
-          } = { delocalise: true }
+            delocalize: boolean;
+          } = { delocalize: true }
         ) => {
+          const livePreviewData = getLivePreviewDataForCollection(key);
+
+          if (livePreviewData) {
+            return livePreviewData;
+          }
+
           const client = await mongoClientPromise;
 
           const doc = await client
@@ -50,7 +57,7 @@ export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
               {
                 projection: {
                   _id: 0,
-                  ...Object.keys(config.collections[key].fields).reduce(
+                  ...Object.keys(collections[key].fields).reduce(
                     (acc, curr) => ({ ...acc, [curr]: 1 }),
                     {}
                   ),
@@ -62,10 +69,10 @@ export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
             throw new Error("Document not found");
           }
 
-          if (options.delocalise) {
-            return delocalisePayload(
+          if (options.delocalize) {
+            return delocalizePayload(
               doc,
-              config.collections[key].fields,
+              collections[key].fields,
               locale || config.i18n.defaultLocale,
               config.i18n.defaultLocale
             );
@@ -75,5 +82,57 @@ export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
         },
       },
     };
-  }, {} as CatalystData<C>);
+  }, {} as CatalystCollectionDataObject<C["collections"]>);
+
+  const globalsDataObject = Object.keys(globals).reduce((acc, key) => {
+    return {
+      ...acc,
+      [key]: {
+        get: async (
+          locale?: string,
+          options: {
+            delocalize: boolean;
+          } = { delocalize: true }
+        ) => {
+          const client = await mongoClientPromise;
+
+          const doc = await client
+            .db()
+            .collection(key)
+            .findOne(
+              {},
+              {
+                projection: {
+                  _id: 0,
+                  ...Object.keys(globals[key].fields).reduce(
+                    (acc, curr) => ({ ...acc, [curr]: 1 }),
+                    {}
+                  ),
+                },
+              }
+            );
+
+          if (!doc) {
+            throw new Error("Document not found");
+          }
+
+          if (options.delocalize) {
+            return delocalizePayload(
+              doc,
+              globals[key].fields,
+              locale || config.i18n.defaultLocale,
+              config.i18n.defaultLocale
+            );
+          }
+
+          return doc;
+        },
+      },
+    };
+  }, {} as CatalystGlobalsDataObject<C["globals"]>);
+
+  return {
+    ...collectionsDataObject,
+    ...globalsDataObject,
+  } satisfies CatalystDataObject<C>;
 }
