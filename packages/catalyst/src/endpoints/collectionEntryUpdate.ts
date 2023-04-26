@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ObjectId } from "mongodb";
-import flatten from "flat";
 import mongoClientPromise from "../mongo";
 import { CatalystConfig } from "../types";
 import { makePayloadLocalized } from "../utils";
@@ -58,9 +57,6 @@ export async function handleCollectionEntryUpdate(
   // Apply locale to localized fields
   const payload = makePayloadLocalized(json, locale, collection.fields);
 
-  // Flatten localized data for atomic update in mongo
-  const flattenedPayload = flatten(payload);
-
   // Update document in MongoDB
   const client = await mongoClientPromise;
 
@@ -68,15 +64,13 @@ export async function handleCollectionEntryUpdate(
     await client
       .db()
       .collection(collectionKey)
-      .updateOne(
+      .replaceOne(
         {
           _id: {
             $eq: new ObjectId(docId),
           },
         },
-        {
-          $set: flattenedPayload,
-        }
+        payload
       );
   } catch (err) {
     return res.status(500).json({
