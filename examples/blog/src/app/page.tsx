@@ -1,5 +1,14 @@
 import { cms } from "@/cms";
 
+export async function generateMetadata() {
+  const seo = await cms.data.seo.get();
+
+  return {
+    title: seo.title,
+    description: seo.description,
+  };
+}
+
 export default async function Home() {
   const articles = await cms.data.articles.find();
 

@@ -6,27 +6,24 @@ import { CatalystConfig } from "../types";
 import { makePayloadLocalized } from "../utils";
 import { forEachFieldInCollection } from "./utils";
 
-export function isCollectionEntryUpdateEndpoint(req: NextApiRequest) {
+export function isGlobalUpsertEndpoint(req: NextApiRequest) {
   const [typeKind] = req.query.catalyst as string[];
 
-  return req.method === "PATCH" && typeKind === "collection";
+  return req.method === "POST" && typeKind === "global";
 }
 
-export async function handleCollectionEntryUpdate(
+export async function handleGlobalUpsert(
   config: CatalystConfig,
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  // Get query params
-  const [_, collectionKey, docId] = req.query.catalyst as string[];
+  const [_, globalKey] = req.query.catalyst as string[];
 
-  // Check if collection param is valid
-  const collection = config.collections[collectionKey];
-  if (!collection) {
+  const global = config.globals[globalKey];
+  if (!global) {
     return res.status(404).end();
   }
 
-  // Parse JSON body
   let json: any;
   try {
     json = JSON.parse(req.body);
@@ -38,9 +35,9 @@ export async function handleCollectionEntryUpdate(
 
   // TODO: Validate payload
 
-  // Run update hooks
+  // Run hooks
   await Promise.all(
-    forEachFieldInCollection(collection, async (field, key) => {
+    forEachFieldInCollection(global, async (field, key) => {
       if (field.hooks && field.hooks.beforeUpdate) {
         json[key] = await field.hooks.beforeUpdate(json[key]);
       }
@@ -56,26 +53,28 @@ export async function handleCollectionEntryUpdate(
   const locale = req.query.locale || config.i18n.defaultLocale;
 
   // Apply locale to localized fields
-  const payload = makePayloadLocalized(json, locale, collection.fields);
+  const payload = makePayloadLocalized(json, locale, global.fields);
 
-  // Flatten localized data for atomic update in mongo
+  // Flatten localized data for atomic updates in mongo
   const flattenedPayload = flatten(payload);
 
   // Update document in MongoDB
   const client = await mongoClientPromise;
-
   try {
     await client
       .db()
-      .collection(collectionKey)
+      .collection(globalKey)
       .updateOne(
         {
           _id: {
-            $eq: new ObjectId(docId),
+            $eq: new ObjectId("ca7a1157610ba1ca7a1157ff"),
           },
         },
         {
           $set: flattenedPayload,
+        },
+        {
+          upsert: true,
         }
       );
   } catch (err) {

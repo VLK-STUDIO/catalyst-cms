@@ -1,47 +1,14 @@
 import { logWarning } from "./logger";
-import {
-  CatalystCollection,
-  CatalystConfig,
-  CatalystReferenceField,
-  SerializableCatalystCollection,
-  SerializableCatalystConfig,
-} from "./types";
+import { CatalystCollection, CatalystReferenceField } from "./types";
 
-export const serializeCatalystConfig = (
-  config: CatalystConfig
-): SerializableCatalystConfig => {
-  return {
-    ...config,
-    collections: Object.fromEntries(
-      Object.entries(config.collections).map(([key, value]) => {
-        return [key, serializeCatalystCollection(value)];
-      })
-    ),
-  };
-};
-
-export const serializeCatalystCollection = (
-  collection: CatalystCollection
-): SerializableCatalystCollection => {
-  return {
-    ...collection,
-    fields: Object.fromEntries(
-      Object.entries(collection.fields).map(([key, value]) => {
-        // TODO: Filter non-serializable data (such as zod validation schema or hooks)
-        return [key, value];
-      })
-    ),
-  };
-};
-
-export const makePayloadLocalised = (
+export const makePayloadLocalized = (
   payload: any,
   locale: string,
   collectionFields: CatalystCollection["fields"]
 ) => {
   return Object.fromEntries(
     Object.entries(payload).map(([key, value]) => {
-      if ("localised" in collectionFields[key]) {
+      if ("localized" in collectionFields[key]) {
         return [key, { [locale]: value }];
       }
 
@@ -50,7 +17,7 @@ export const makePayloadLocalised = (
   );
 };
 
-export const delocalisePayload = (
+export const delocalizePayload = (
   payload: Record<string, string | Record<string, string>>,
   collectionFields: CatalystCollection["fields"],
   locale: string,
@@ -64,7 +31,7 @@ export const delocalisePayload = (
         return [key, value];
       }
 
-      if ("localised" in collectionFields[key]) {
+      if ("localized" in collectionFields[key]) {
         if (typeof value !== "object") {
           logWarning(
             `Expected an object for localized field '${key}', but got '${typeof value}'. This is not an error, but it means your localized column contains stale data. You should perform a migration on this field to fix this.`

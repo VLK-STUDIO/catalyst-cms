@@ -21,7 +21,7 @@ type Props = {
     locales: string[];
     defaultLocale: string;
   };
-  collectionName: string;
+  typeName: string;
 };
 
 export const Form: React.FC<Props> = ({
@@ -32,7 +32,7 @@ export const Form: React.FC<Props> = ({
   title,
   previewUrl,
   i18n,
-  collectionName,
+  typeName,
 }) => {
   const params = useSearchParams();
 
@@ -84,7 +84,7 @@ export const Form: React.FC<Props> = ({
         <LivePreviewFrame
           data={liveData}
           url={previewUrl}
-          collectionName={collectionName}
+          typeName={typeName}
         />
       )}
     </div>

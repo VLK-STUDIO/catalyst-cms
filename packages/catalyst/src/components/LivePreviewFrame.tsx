@@ -7,7 +7,7 @@ import { useDebounce } from "./hooks/useDebounce";
 type Props = {
   url: string;
   data: any;
-  collectionName: string;
+  typeName: string;
 };
 
 export const LivePreviewFrame: React.FC<Props> = (props) => {
@@ -18,7 +18,7 @@ export const LivePreviewFrame: React.FC<Props> = (props) => {
   useEffect(() => {
     wretch(props.url)
       .headers({
-        [`x-catalyst-live-preview-${props.collectionName}`]:
+        [`x-catalyst-live-preview-${props.typeName}`]:
           JSON.stringify(debouncedData),
       })
       .get()

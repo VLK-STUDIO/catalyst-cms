@@ -1,11 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import mongoClientPromise from "../mongo";
 import { CatalystConfig } from "../types";
-import { makePayloadLocalised } from "../utils";
+import { makePayloadLocalized } from "../utils";
 import { forEachFieldInCollection } from "./utils";
 
 export function isCollectionEntryCreationEndpoint(req: NextApiRequest) {
-  return req.method === "POST";
+  const [typeKind] = req.query.catalyst as string[];
+
+  return req.method === "POST" && typeKind === "collection";
 }
 
 export async function handleCollectionEntryCreation(
@@ -14,7 +16,7 @@ export async function handleCollectionEntryCreation(
   res: NextApiResponse
 ) {
   // Get query params
-  const [collectionKey] = req.query.catalyst as string[];
+  const [_, collectionKey] = req.query.catalyst as string[];
 
   // Check if collection param is valid
   const collection = config.collections[collectionKey];
@@ -54,7 +56,7 @@ export async function handleCollectionEntryCreation(
   const locale = req.query.locale || config.i18n.defaultLocale;
 
   // Apply locale to localized fields
-  const payload = makePayloadLocalised(json, locale, collection.fields);
+  const payload = makePayloadLocalized(json, locale, collection.fields);
 
   // Insert document into MongoDB
   const client = await mongoClientPromise;

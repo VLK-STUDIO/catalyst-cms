@@ -1,11 +1,11 @@
-import { CatalystConfig } from "./types";
+import { UserCatalystConfig } from "./types";
 import { createRootPage } from "./pages";
 import { createCatalystAuthObject } from "./auth";
 import { createCatalystDataObject } from "./data";
 import { createRootEndpoint } from "./endpoints";
 
-export function createCatalyst<C extends CatalystConfig>(userConfig: C) {
-  const config = getConfigWithDefaultUsersCollection(userConfig);
+export function createCatalyst<C extends UserCatalystConfig>(userConfig: C) {
+  const config = getConfigWithDefaults(userConfig);
 
   const data = createCatalystDataObject(config);
 
@@ -23,9 +23,7 @@ export function createCatalyst<C extends CatalystConfig>(userConfig: C) {
   };
 }
 
-function getConfigWithDefaultUsersCollection<C extends CatalystConfig>(
-  config: C
-): C {
+function getConfigWithDefaults<C extends UserCatalystConfig>(config: C) {
   return {
     ...config,
     collections: {
