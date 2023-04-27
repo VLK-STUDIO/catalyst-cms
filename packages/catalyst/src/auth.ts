@@ -23,6 +23,12 @@ const authOptions: AuthOptions = {
       const doc = await collection.findOne({ email: user.email });
 
       if (!doc) {
+        const userCount = await collection.estimatedDocumentCount();
+
+        // Allow first user to sign in without
+        // being part of the users collection.
+        if (userCount === 0) return true;
+
         return false;
       }
 
@@ -43,6 +49,6 @@ export function isAuthRequest(req: NextApiRequest) {
 
 export function createCatalystAuthObject() {
   return {
-    getServerSession: () => getServerSession(authOptions),
+    getSession: () => getServerSession(authOptions),
   };
 }

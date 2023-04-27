@@ -5,7 +5,6 @@ import type {
 } from "../types";
 import { Form } from "../components/form/Form";
 import { getFormFieldsFromDataType } from "../components/form/utils";
-import { getPreviewUrlForDoc } from "../preview";
 
 type Props<C extends CatalystConfig> = {
   i18n: C["i18n"];
@@ -35,7 +34,7 @@ export async function EditGlobalPage<C extends CatalystConfig>({
       endpoint={`/api/global/${name}`}
       submitText={doc ? "Update" : "Create"}
       title={`EDIT ${name}`}
-      previewUrl={previewUrl && getPreviewUrlForDoc(doc, previewUrl)}
+      previewUrl={previewUrl}
       typeName={name as string}
     />
   );

@@ -9,7 +9,7 @@ export const SignInWithGoogle: React.FC = () => {
 
   return (
     <Button
-      onClick={() => signInWithGoogle(subroute)}
+      onClick={() => signInWithGoogle(`/${subroute}`)}
       className="!bg-red-600 px-4 hover:bg-red-700"
     >
       Sign in with Google
