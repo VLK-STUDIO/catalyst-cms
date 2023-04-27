@@ -4,6 +4,12 @@ Catalyst is a content management system that can be plugged to Next.js apps.
 
 Its main focus is end-to-end type safety using a code-first approach to configuration and React Server Components for data fetching.
 
+> **Warning**
+>
+> Catalyst is at a very early prototype phase.
+> 
+> Many of its promised features work only partially or not at all. If you have questions file an issue.
+
 ## Focus
 
 Catalyst tries to compete with existing CMS's on the following features:
@@ -15,6 +21,16 @@ Catalyst tries to compete with existing CMS's on the following features:
 - Wide range of authentication options (via [Auth.js](https://authjs.dev/))
 - Pluggability into existing Next.js apps
 - Ease of initial setup and deployment
+
+## Usage goal
+
+0. Create a Next.js app with the `app` directory.
+1. Install the `catalyst-cms` package
+2. Add an optional catch-all page for our dashboard: `/catalyst/[[...catalyst]]/page.tsx`
+3. Add a catch-all API endpoint for our back-end (for now using the old `pages` directory): `/pages/api/[...catalyst].ts`
+4. Create a CMS object somewhere using `createCatalyst` and configure it with the collections you want.
+5. Import `cms.rootPage` in the catch-all page and `cms.rootEndpoint` in the endpoint you created.
+6. Done! You can now use `cms.data.collection.find()` for data fetching and `cms.auth.getSession()` for authentication in Server Components!
 
 ## Project structure
 
