@@ -1,5 +1,5 @@
 import { UserCatalystConfig } from "./types";
-import { createRootPage } from "./pages";
+import { createRootPage } from "./pages/base";
 import { createCatalystAuthObject } from "./auth";
 import { createCatalystDataObject } from "./data";
 import { createRootEndpoint } from "./endpoints";

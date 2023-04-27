@@ -1,113 +1,48 @@
-import "@unocss/reset/tailwind-compat.css";
-import "./uno.css";
-import { notFound } from "next/navigation";
-import { CatalystAuth, CatalystConfig, CatalystDataObject } from "../types";
-import { IndexPage } from "./base";
-import { BrowsePage } from "./browse";
-import { CreatePage } from "./create";
-import { EditCollectionPage } from "./editCollection";
-import LoginPage from "./login";
-import LogoutPage from "./logout";
-import { EditGlobalPage } from "./editGlobal";
+import { CatalystAuth, CatalystConfig } from "../types";
+import { Logo } from "../components/Logo";
+import { CurrentSubrouteLink } from "../components/CurrentSubrouteLink";
 
-type RootPageProps = {
-  params: {
-    catalyst?: string[];
-  };
-  searchParams?: Record<string, string>;
+type IndexPageProps = {
+  config: CatalystConfig;
+  auth: CatalystAuth;
 };
 
-export function createRootPage<C extends CatalystConfig>(
-  config: C,
-  data: CatalystDataObject<C>,
-  auth: CatalystAuth
-) {
-  return async function RootPage({ params, searchParams }: RootPageProps) {
-    if (!params.catalyst) {
-      // @ts-expect-error Server Components
-      return <IndexPage config={config} auth={auth} />;
-    }
+export async function IndexPage({ config, auth }: IndexPageProps) {
+  return (
+    <div className="flex flex-col bg-gray-100 p-16 h-full gap-4">
+      <div className="flex items-center gap-2 mb-8">
+        <Logo className="w-11 h-11" />
+        <h1 className="text-red-600 font-black text-4xl">CATALYST</h1>
+      </div>
 
-    const [route] = params.catalyst;
-
-    if (route === "browse") {
-      const collectionName = params.catalyst[1];
-
-      const collection = config.collections[collectionName];
-
-      if (!collection) {
-        notFound();
-      }
-
-      return (
-        // @ts-expect-error Server Components
-        <BrowsePage
-          collection={{ ...collection, name: collectionName }}
-          data={data}
-        />
-      );
-    } else if (route === "create") {
-      const collectionName = params.catalyst[1];
-
-      const collection = config.collections[collectionName];
-
-      if (!collection) {
-        notFound();
-      }
-
-      return (
-        // @ts-expect-error Server Components
-        <CreatePage
-          collection={collection}
-          name={collectionName}
-          i18n={config.i18n}
-        />
-      );
-    } else if (route === "edit") {
-      const [_, typeName, docId] = params.catalyst;
-
-      const collection = config.collections[typeName];
-
-      if (collection) {
-        return (
-          // @ts-expect-error server components
-          <EditCollectionPage
-            collection={collection}
-            data={data}
-            searchParams={searchParams}
-            i18n={config.i18n}
-            name={typeName}
-            docId={docId}
-          />
-        );
-      }
-
-      const global = config.globals[typeName];
-
-      if (!global) {
-        notFound();
-      }
-
-      return (
-        // @ts-expect-error Server Components
-        <EditGlobalPage
-          global={global}
-          data={data}
-          searchParams={searchParams}
-          i18n={config.i18n}
-          name={typeName}
-        />
-      );
-    } else if (route === "login") {
-      return (
-        // @ts-expect-error Server Components
-        <LoginPage />
-      );
-    } else if (route === "logout") {
-      // @ts-expect-error Server Components
-      return <LogoutPage />;
-    }
-
-    notFound();
-  };
+      <div className="flex flex-col">
+        <span className="font-semibold text-gray-500 mb-1">Collections</span>
+        <div className="flex flex-col gap-2">
+          {Object.entries(config.collections).map(([key, collection]) => (
+            <CurrentSubrouteLink
+              key={key}
+              href={`browse/${key}`}
+              className="p-4 flex flex-col gap-4 font-semibold text-gray-700 border border-gray-300 rounded bg-white hover:border-gray-400"
+            >
+              {collection.label}
+            </CurrentSubrouteLink>
+          ))}
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <span className="font-semibold text-gray-500 mb-1">Globals</span>
+        <div className="flex flex-col gap-2">
+          {Object.entries(config.globals).map(([key, global]) => (
+            <CurrentSubrouteLink
+              key={key}
+              href={`edit/${key}`}
+              className="p-4 flex flex-col gap-4 font-semibold text-gray-700 border border-gray-300 rounded bg-white hover:border-gray-400"
+            >
+              {global.label}
+            </CurrentSubrouteLink>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
