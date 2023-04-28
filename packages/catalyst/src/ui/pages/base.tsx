@@ -1,7 +1,7 @@
 import "@unocss/reset/tailwind-compat.css";
-import "./uno.css";
+import "../uno.css";
 import { notFound, redirect } from "next/navigation";
-import { CatalystAuth, CatalystConfig, CatalystDataObject } from "../types";
+import { CatalystAuth, CatalystConfig, CatalystDataObject } from "../../types";
 import { IndexPage } from ".";
 import { BrowsePage } from "./browse";
 import { CreatePage } from "./create";
@@ -9,6 +9,7 @@ import { EditCollectionPage } from "./editCollection";
 import LoginPage from "./login";
 import LogoutPage from "./logout";
 import { EditGlobalPage } from "./editGlobal";
+import { ForbiddenPage } from "./forbidden";
 
 type RootPageProps = {
   params: {
@@ -22,7 +23,7 @@ export function createRootPage<C extends CatalystConfig>(
   data: CatalystDataObject<C>,
   auth: CatalystAuth
 ) {
-  return async function RootPage({ params, searchParams }: RootPageProps) {
+  return async function RouteSwitch({ params, searchParams }: RootPageProps) {
     if (params.catalyst && params.catalyst[0] === "login") {
       // @ts-expect-error Server Components
       return <LoginPage />;
@@ -36,7 +37,7 @@ export function createRootPage<C extends CatalystConfig>(
 
     if (!params.catalyst) {
       // @ts-expect-error Server Components
-      return <IndexPage config={config} auth={auth} />;
+      return <IndexPage config={config} session={session} />;
     }
 
     const [route] = params.catalyst;
@@ -117,6 +118,8 @@ export function createRootPage<C extends CatalystConfig>(
     } else if (route === "logout") {
       // @ts-expect-error Server Components
       return <LogoutPage />;
+    } else if (route === "forbidden") {
+      return <ForbiddenPage />;
     }
 
     notFound();

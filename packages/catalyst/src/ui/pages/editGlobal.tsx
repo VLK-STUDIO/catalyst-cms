@@ -1,10 +1,13 @@
+import { redirect } from "next/navigation";
+import { canUserUpdateDataType } from "../../access";
 import type {
   CatalystConfig,
   CatalystDataObject,
   CatalystGlobal,
-} from "../types";
+} from "../../types";
 import { Form } from "../components/form/Form";
 import { getFormFieldsFromDataType } from "../components/form/utils";
+import { Session } from "next-auth";
 
 type Props<C extends CatalystConfig> = {
   i18n: C["i18n"];
@@ -12,6 +15,7 @@ type Props<C extends CatalystConfig> = {
   searchParams?: Record<string, string>;
   global: CatalystGlobal;
   name: string;
+  session: Session;
 };
 
 export async function EditGlobalPage<C extends CatalystConfig>({
@@ -19,7 +23,12 @@ export async function EditGlobalPage<C extends CatalystConfig>({
   name,
   data,
   i18n,
+  session,
 }: Props<C>) {
+  if (!canUserUpdateDataType(session, global)) {
+    redirect("/catalyst/forbidden");
+  }
+
   const { previewUrl } = global;
 
   const doc = await data[name].get().catch(() => undefined);

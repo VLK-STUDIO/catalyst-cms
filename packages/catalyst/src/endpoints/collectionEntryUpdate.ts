@@ -3,7 +3,8 @@ import { ObjectId } from "mongodb";
 import mongoClientPromise from "../mongo";
 import { CatalystConfig } from "../types";
 import { makePayloadLocalized } from "../utils";
-import { forEachFieldInCollection } from "./utils";
+import { getCatalystServerSession } from "../auth";
+import { canUserUpdateDataType } from "../access";
 
 export function isCollectionEntryUpdateEndpoint(req: NextApiRequest) {
   const [typeKind] = req.query.catalyst as string[];
@@ -25,6 +26,14 @@ export async function handleCollectionEntryUpdate(
     return res.status(404).end();
   }
 
+  const session = await getCatalystServerSession();
+
+  if (!canUserUpdateDataType(session, collection)) {
+    return res.status(403).json({
+      error: "Unauthorized",
+    });
+  }
+
   // Parse JSON body
   let json: any;
   try {
@@ -38,13 +47,9 @@ export async function handleCollectionEntryUpdate(
   // TODO: Validate payload
 
   // Run update hooks
-  await Promise.all(
-    forEachFieldInCollection(collection, async (field, key) => {
-      if (field.hooks && field.hooks.beforeUpdate) {
-        json[key] = await field.hooks.beforeUpdate(json[key]);
-      }
-    })
-  );
+  if (collection.hooks && collection.hooks.beforeUpdate) {
+    json = await collection.hooks.beforeUpdate(json);
+  }
 
   // Make sure request locale is valid
   if (req.query.locale && typeof req.query.locale !== "string") {

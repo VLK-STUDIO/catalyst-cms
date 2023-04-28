@@ -2,7 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import mongoClientPromise from "../mongo";
 import { CatalystConfig } from "../types";
 import { makePayloadLocalized } from "../utils";
-import { forEachFieldInCollection } from "./utils";
+import { getCatalystServerSession } from "../auth";
+import { canUserCreateCollectionEntry } from "../access";
 
 export function isCollectionEntryCreationEndpoint(req: NextApiRequest) {
   const [typeKind] = req.query.catalyst as string[];
@@ -24,6 +25,14 @@ export async function handleCollectionEntryCreation(
     return res.status(404).end();
   }
 
+  const session = await getCatalystServerSession();
+
+  if (!canUserCreateCollectionEntry(session, collection)) {
+    return res.status(403).json({
+      error: "Unauthorized",
+    });
+  }
+
   // Parse JSON body
   let json: any;
   try {
@@ -37,13 +46,9 @@ export async function handleCollectionEntryCreation(
   // TODO: Validate using field zod schema
 
   // Run creation hooks
-  await Promise.all(
-    forEachFieldInCollection(collection, async (field, key) => {
-      if (field.hooks && field.hooks.beforeCreate) {
-        json[key] = await field.hooks.beforeCreate(json[key]);
-      }
-    })
-  );
+  if (collection.hooks && collection.hooks.beforeCreate) {
+    json = await collection.hooks.beforeCreate(json);
+  }
 
   // Make sure request locale is valid
   if (req.query.locale && typeof req.query.locale !== "string") {

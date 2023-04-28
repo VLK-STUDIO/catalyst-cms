@@ -52,3 +52,7 @@ export function createCatalystAuthObject() {
     getSession: () => getServerSession(authOptions),
   };
 }
+
+export function getCatalystServerSession() {
+  return getServerSession(authOptions);
+}

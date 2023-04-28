@@ -4,7 +4,8 @@ import flatten from "flat";
 import mongoClientPromise from "../mongo";
 import { CatalystConfig } from "../types";
 import { makePayloadLocalized } from "../utils";
-import { forEachFieldInCollection } from "./utils";
+import { canUserUpdateDataType } from "../access";
+import { getCatalystServerSession } from "../auth";
 
 export function isGlobalUpsertEndpoint(req: NextApiRequest) {
   const [typeKind] = req.query.catalyst as string[];
@@ -24,6 +25,14 @@ export async function handleGlobalUpsert(
     return res.status(404).end();
   }
 
+  const session = await getCatalystServerSession();
+
+  if (!canUserUpdateDataType(session, global)) {
+    return res.status(403).json({
+      error: "Unauthorized",
+    });
+  }
+
   let json: any;
   try {
     json = JSON.parse(req.body);
@@ -36,13 +45,9 @@ export async function handleGlobalUpsert(
   // TODO: Validate payload
 
   // Run hooks
-  await Promise.all(
-    forEachFieldInCollection(global, async (field, key) => {
-      if (field.hooks && field.hooks.beforeUpdate) {
-        json[key] = await field.hooks.beforeUpdate(json[key]);
-      }
-    })
-  );
+  if (global.hooks && global.hooks.beforeUpdate) {
+    json = await global.hooks.beforeUpdate(json);
+  }
 
   // Make sure request locale is valid
   if (req.query.locale && typeof req.query.locale !== "string") {

@@ -3,83 +3,23 @@ import mongoClientPromise from "./mongo";
 import {
   CatalystCollectionDataObject,
   CatalystConfig,
-  CatalystDataObject,
   CatalystGlobalsDataObject,
 } from "./types";
 import { delocalizePayload } from "./utils";
-import { getLivePreviewDataForCollection } from "./preview";
+import { getCatalystServerSession } from "./auth";
+import { canUserReadDataType } from "./access";
 
 export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
-  const { collections = {}, globals = {} } = config;
+  const { collections, globals } = config;
 
   const collectionsDataObject = Object.keys(collections).reduce((acc, key) => {
     return {
       ...acc,
       [key]: {
-        find: async (locale?: string) => {
-          const client = await mongoClientPromise;
-
-          const docs = await client.db().collection(key).find().toArray();
-
-          return docs.map((doc) =>
-            delocalizePayload(
-              doc,
-              collections[key].fields,
-              locale || config.i18n.defaultLocale,
-              config.i18n.defaultLocale
-            )
-          );
-        },
-        findOne: async (
-          id: string,
-          locale?: string,
-          options: {
-            delocalize: boolean;
-          } = { delocalize: true }
-        ) => {
-          const livePreviewData = getLivePreviewDataForCollection(key);
-
-          if (livePreviewData) {
-            return livePreviewData;
-          }
-
-          const client = await mongoClientPromise;
-
-          const doc = await client
-            .db()
-            .collection(key)
-            .findOne(
-              {
-                _id: {
-                  $eq: new ObjectId(id),
-                },
-              },
-              {
-                projection: {
-                  _id: 0,
-                  ...Object.keys(collections[key].fields).reduce(
-                    (acc, curr) => ({ ...acc, [curr]: 1 }),
-                    {}
-                  ),
-                },
-              }
-            );
-
-          if (!doc) {
-            throw new Error("Document not found");
-          }
-
-          if (options.delocalize) {
-            return delocalizePayload(
-              doc,
-              collections[key].fields,
-              locale || config.i18n.defaultLocale,
-              config.i18n.defaultLocale
-            );
-          }
-
-          return doc;
-        },
+        findAsUser: createFindAsUserFunction(key, config),
+        findOneAsUser: createFindOneAsUserFunction(key, config),
+        find: createFindFunction(key, config),
+        findOne: createFindOneFunction(key, config),
       },
     };
   }, {} as CatalystCollectionDataObject<C["collections"]>);
@@ -88,45 +28,8 @@ export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
     return {
       ...acc,
       [key]: {
-        get: async (
-          locale?: string,
-          options: {
-            delocalize: boolean;
-          } = { delocalize: true }
-        ) => {
-          const client = await mongoClientPromise;
-
-          const doc = await client
-            .db()
-            .collection(key)
-            .findOne(
-              {},
-              {
-                projection: {
-                  _id: 0,
-                  ...Object.keys(globals[key].fields).reduce(
-                    (acc, curr) => ({ ...acc, [curr]: 1 }),
-                    {}
-                  ),
-                },
-              }
-            );
-
-          if (!doc) {
-            throw new Error("Document not found");
-          }
-
-          if (options.delocalize) {
-            return delocalizePayload(
-              doc,
-              globals[key].fields,
-              locale || config.i18n.defaultLocale,
-              config.i18n.defaultLocale
-            );
-          }
-
-          return doc;
-        },
+        getAsUser: createGetAsUserFunction(key, config),
+        get: createGetFunction(key, config),
       },
     };
   }, {} as CatalystGlobalsDataObject<C["globals"]>);
@@ -134,5 +37,127 @@ export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
   return {
     ...collectionsDataObject,
     ...globalsDataObject,
-  } satisfies CatalystDataObject<C>;
+  };
+}
+
+function createFindAsUserFunction(
+  collectionKey: string,
+  config: CatalystConfig
+) {
+  const collection = config.collections[collectionKey];
+
+  return async (locale?: string) => {
+    const session = await getCatalystServerSession();
+
+    if (!canUserReadDataType(session, collection)) {
+      throw new Error(`Unauthorized read of collection '${collectionKey}'`);
+    }
+
+    const find = createFindFunction(collectionKey, config);
+
+    return await find(locale);
+  };
+}
+
+function createFindOneAsUserFunction(
+  collectionKey: string,
+  config: CatalystConfig
+) {
+  const collection = config.collections[collectionKey];
+
+  return async (id: string, locale?: string) => {
+    const session = await getCatalystServerSession();
+
+    if (!canUserReadDataType(session, collection)) {
+      throw new Error(`Unauthorized read of collection '${collectionKey}'`);
+    }
+
+    const findOne = createFindOneFunction(collectionKey, config);
+
+    return await findOne(id, locale);
+  };
+}
+
+function createFindFunction(collectionKey: string, config: CatalystConfig) {
+  const collection = config.collections[collectionKey];
+
+  return async (locale?: string) => {
+    const client = await mongoClientPromise;
+
+    const docs = await client.db().collection(collectionKey).find().toArray();
+
+    return docs.map((doc) =>
+      delocalizePayload(
+        doc,
+        collection.fields,
+        locale || config.i18n.defaultLocale,
+        config.i18n.defaultLocale
+      )
+    );
+  };
+}
+
+function createFindOneFunction(collectionKey: string, config: CatalystConfig) {
+  const collection = config.collections[collectionKey];
+
+  return async (id: string, locale?: string) => {
+    const client = await mongoClientPromise;
+
+    const doc = await client
+      .db()
+      .collection(collectionKey)
+      .findOne({
+        _id: {
+          $eq: new ObjectId(id),
+        },
+      });
+
+    if (!doc) {
+      throw new Error("Document not found");
+    }
+
+    return delocalizePayload(
+      doc,
+      collection.fields,
+      locale || config.i18n.defaultLocale,
+      config.i18n.defaultLocale
+    );
+  };
+}
+
+function createGetAsUserFunction(globalKey: string, config: CatalystConfig) {
+  const global = config.globals[globalKey];
+
+  return async (locale?: string) => {
+    const session = await getCatalystServerSession();
+
+    if (!canUserReadDataType(session, global)) {
+      throw new Error(`Unauthorized read of global '${globalKey}'`);
+    }
+
+    const get = createGetFunction(globalKey, config);
+
+    return await get(locale);
+  };
+}
+
+function createGetFunction(globalKey: string, config: CatalystConfig) {
+  const global = config.globals[globalKey];
+
+  return async (locale?: string) => {
+    const client = await mongoClientPromise;
+
+    const doc = await client.db().collection(globalKey).findOne();
+
+    if (!doc) {
+      throw new Error("Document not found");
+    }
+
+    return delocalizePayload(
+      doc,
+      global.fields,
+      locale || config.i18n.defaultLocale,
+      config.i18n.defaultLocale
+    );
+  };
 }

@@ -1,10 +1,10 @@
 import { logWarning } from "./logger";
-import { CatalystCollection, CatalystReferenceField } from "./types";
+import { CatalystFields } from "./types";
 
 export const makePayloadLocalized = (
   payload: any,
   locale: string,
-  collectionFields: CatalystCollection["fields"]
+  collectionFields: CatalystFields
 ) => {
   return Object.fromEntries(
     Object.entries(payload).map(([key, value]) => {
@@ -19,7 +19,7 @@ export const makePayloadLocalized = (
 
 export const delocalizePayload = (
   payload: Record<string, string | Record<string, string>>,
-  collectionFields: CatalystCollection["fields"],
+  collectionFields: CatalystFields,
   locale: string,
   fallbackLocale: string
 ) => {
@@ -48,9 +48,3 @@ export const delocalizePayload = (
     })
   );
 };
-
-export function getCollectionReferenceFields(collection: CatalystCollection) {
-  return Object.entries(collection.fields).filter(
-    ([_, value]) => value.type === "reference"
-  ) as [string, CatalystReferenceField][];
-}

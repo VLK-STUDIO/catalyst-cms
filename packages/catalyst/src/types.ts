@@ -1,12 +1,36 @@
 import { ObjectId } from "mongodb";
 import { createCatalystAuthObject } from "./auth";
 
-export type UserCatalystConfig = Omit<CatalystConfig, "collections"> & {
-  collections?: CatalystConfig["collections"];
+export type CatalystDataObject<C extends CatalystConfig> =
+  CatalystCollectionDataObject<C["collections"]> &
+    CatalystGlobalsDataObject<C["globals"]>;
+
+export type CatalystCollectionDataObject<
+  C extends CatalystConfig["collections"]
+> = {
+  [K in keyof C]: {
+    findAsUser: () => Promise<ComputedCatalystFields<C[K]["fields"]>[]>;
+    findOneAsUser: () => Promise<ComputedCatalystFields<C[K]["fields"]>>;
+    find: () => Promise<ComputedCatalystFields<C[K]["fields"]>[]>;
+    findOne: (
+      id: string,
+      locale?: string,
+      options?: { delocalize: boolean }
+    ) => Promise<ComputedCatalystFields<C[K]["fields"]>>;
+  };
+};
+
+export type CatalystGlobalsDataObject<C extends CatalystConfig["globals"]> = {
+  [K in keyof C]: {
+    getAsUser: () => Promise<ComputedCatalystFields<C[K]["fields"]>>;
+    get: () => Promise<ComputedCatalystFields<C[K]["fields"]>>;
+  };
 };
 
 export type CatalystConfig = {
   collections: {
+    users: CatalystCollection;
+  } & {
     [K: string]: CatalystCollection;
   };
   globals: {
@@ -16,84 +40,85 @@ export type CatalystConfig = {
     defaultLocale: string;
     locales: string[];
   };
-  auth?: {
-    fields?: {
-      [K: string]: CatalystField;
-    };
-  };
 };
 
 export type CatalystDataType = CatalystCollection | CatalystGlobal;
 
-export type CatalystGlobal = {
-  fields: Record<string, CatalystField>;
-  label: string;
-  previewUrl?: string;
+export type CatalystCollection = CatalystBaseDataType & {
+  access?: {
+    read?: CatalystAccessControlFunction;
+    update?: CatalystAccessControlFunction;
+    delete?: CatalystAccessControlFunction;
+    create?: CatalystAccessControlFunction;
+  };
+  hooks?: {
+    beforeCreate?: (data: any) => any;
+    beforeUpdate?: (data: any) => any;
+    beforeDelete?: (data: any) => any;
+  };
 };
 
-export type CatalystCollection = {
-  fields: Record<string, CatalystField>;
+export type CatalystGlobal = CatalystBaseDataType & {
+  access?: {
+    read?: CatalystAccessControlFunction;
+    update?: CatalystAccessControlFunction;
+  };
+  hooks?: {
+    beforeUpdate?: (data: any) => any;
+  };
+};
+
+export type CatalystBaseDataType = {
   label: string;
   previewUrl?: string;
+  fields: CatalystFields;
+};
+
+type CatalystAccessControlFunction = (user: any) => boolean;
+
+type ComputedCatalystFields<T extends CatalystFields> = {
+  [K in keyof T]: K extends "_id"
+    ? ObjectId
+    : T[K] extends "text"
+    ? string
+    : T[K] extends "richtext"
+    ? string
+    : never;
+};
+
+export type CatalystFields = {
+  [K: string]: CatalystField;
 };
 
 export type CatalystField = CatalystFieldBase &
   (CatalystTextField | CatalystRichTextField | CatalystReferenceField);
 
-export type CatalystFieldBase = {
-  label: string;
-  hooks?: {
-    beforeCreate?: (value: any) => any | Promise<any>;
-    beforeUpdate?: (value: any) => any | Promise<any>;
-  };
-};
-
-export type CatalystTextField = CatalystFieldBase & {
+type CatalystTextField = CatalystFieldBase & {
   type: "text";
   localized?: boolean;
+  hooks?: FieldHooks<string>;
 };
 
-export type CatalystRichTextField = CatalystFieldBase & {
+type CatalystRichTextField = CatalystFieldBase & {
   type: "richtext";
   localized?: boolean;
+  hooks?: FieldHooks<string>;
 };
 
-export type CatalystReferenceField = {
+type CatalystReferenceField = {
   label: string;
   type: "reference";
   collection: string;
   exposedColumn?: string;
 };
 
-export type ComputedCollectionFields<T extends CatalystCollection> = {
-  [K in keyof T["fields"] | "_id"]: K extends "_id"
-    ? ObjectId
-    : T["fields"][K] extends "text"
-    ? string
-    : never;
+type CatalystFieldBase = {
+  label: string;
 };
 
-export type CatalystDataObject<C extends CatalystConfig> =
-  CatalystCollectionDataObject<C["collections"]> &
-    CatalystGlobalsDataObject<C["globals"]>;
-
-export type CatalystCollectionDataObject<
-  C extends CatalystConfig["collections"]
-> = {
-  [K in keyof C]: {
-    find: () => Promise<ComputedCollectionFields<C[K]>[]>;
-    findOne: (
-      id: string,
-      locale?: string,
-      options?: { delocalize: boolean }
-    ) => Promise<ComputedCollectionFields<C[K]>>;
-  };
-};
-
-export type CatalystGlobalsDataObject<C extends CatalystConfig["globals"]> = {
-  [K in keyof C]: {
-    get: () => Promise<ComputedCollectionFields<C[K]>>;
-  };
+type FieldHooks<T> = {
+  beforeCreate?: (value: T) => T | Promise<T>;
+  beforeUpdate?: (value: T) => T | Promise<T>;
 };
 
 export type CatalystAuth = ReturnType<typeof createCatalystAuthObject>;
