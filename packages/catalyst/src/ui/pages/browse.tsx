@@ -1,9 +1,9 @@
 import { IconPlus } from "@tabler/icons-react";
 import {
-  CatalystCollection,
   CatalystConfig,
   CatalystDataObject,
-} from "../types";
+  CatalystCollection,
+} from "../../types";
 import { CurrentSubrouteLink } from "../components/CurrentSubrouteLink";
 
 type Props<C extends CatalystConfig> = {
@@ -12,7 +12,7 @@ type Props<C extends CatalystConfig> = {
 };
 
 export async function BrowsePage<C extends CatalystConfig>(props: Props<C>) {
-  const docs = await props.data[props.collection.name].find();
+  const docs = await props.data[props.collection.name].findAsUser();
 
   return (
     <div className="flex flex-col p-16 bg-gray-100 h-full">

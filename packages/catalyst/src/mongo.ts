@@ -1,9 +1,5 @@
 import { MongoClient } from "mongodb";
 
-if (typeof window !== "undefined") {
-  throw new Error("GESU C'E MONGO NEL BROWSER");
-}
-
 if (!process.env.MONGODB_URI) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
 }

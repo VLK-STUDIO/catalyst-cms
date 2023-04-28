@@ -1,10 +1,10 @@
-import type {
-  CatalystCollection,
-  CatalystConfig,
-  CatalystDataObject,
-} from "../types";
+import type { CatalystConfig, CatalystDataObject } from "../../types";
 import { Form } from "../components/form/Form";
 import { getFormFieldsFromDataType } from "../components/form/utils";
+import { CatalystCollection } from "../../types";
+import { Session } from "next-auth";
+import { canUserUpdateDataType } from "../../access";
+import { redirect } from "next/navigation";
 
 type Props<C extends CatalystConfig> = {
   i18n: C["i18n"];
@@ -13,6 +13,7 @@ type Props<C extends CatalystConfig> = {
   collection: CatalystCollection;
   name: string;
   docId: string;
+  session: Session;
 };
 
 export async function EditCollectionPage<C extends CatalystConfig>({
@@ -22,7 +23,12 @@ export async function EditCollectionPage<C extends CatalystConfig>({
   searchParams,
   i18n,
   docId,
+  session,
 }: Props<C>) {
+  if (!canUserUpdateDataType(session, collection)) {
+    redirect("/catalyst/forbidden");
+  }
+
   const doc = await data[name].findOne(
     docId,
     searchParams && searchParams.locale

@@ -1,8 +1,8 @@
 "use client";
 
-import { signInWithGoogle } from "../../client";
+import { signInWithGoogle } from "../../../client";
 import { Button } from "../Button";
-import { useFirstSubroute } from "../hooks/useFirstSubroute";
+import { useFirstSubroute } from "../../hooks/useFirstSubroute";
 
 export const SignInWithGoogle: React.FC = () => {
   const subroute = useFirstSubroute();

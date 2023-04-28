@@ -2,6 +2,15 @@ import { createCatalyst } from "catalyst-cms";
 
 export const cms = createCatalyst({
   collections: {
+    users: {
+      label: "Users",
+      fields: {
+        fullName: {
+          type: "text",
+          label: "Full name",
+        },
+      },
+    },
     articles: {
       previewUrl: "http://localhost:3000/",
       label: "Articles",
@@ -42,13 +51,5 @@ export const cms = createCatalyst({
   i18n: {
     locales: ["en", "fr"],
     defaultLocale: "en",
-  },
-  auth: {
-    fields: {
-      fullName: {
-        type: "text",
-        label: "Full name",
-      },
-    },
   },
 });

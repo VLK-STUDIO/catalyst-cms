@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import wretch from "wretch";
-import { useDebounce } from "./hooks/useDebounce";
+import { useDebounce } from "../hooks/useDebounce";
 
 type Props = {
   url: string;

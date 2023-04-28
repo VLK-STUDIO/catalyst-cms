@@ -1,13 +1,18 @@
-import { CatalystAuth, CatalystConfig } from "../types";
+import { CatalystConfig } from "../../types";
 import { Logo } from "../components/Logo";
 import { CurrentSubrouteLink } from "../components/CurrentSubrouteLink";
+import { Session } from "next-auth";
+import { getCollectionsUserCanRead, getGlobalsUserCanRead } from "../../access";
 
 type IndexPageProps = {
   config: CatalystConfig;
-  auth: CatalystAuth;
+  session: Session;
 };
 
-export async function IndexPage({ config, auth }: IndexPageProps) {
+export async function IndexPage({ config, session }: IndexPageProps) {
+  const collections = getCollectionsUserCanRead(config, session);
+  const globals = getGlobalsUserCanRead(config, session);
+
   return (
     <div className="flex flex-col bg-gray-100 p-16 h-full gap-4">
       <div className="flex items-center gap-2 mb-8">
@@ -18,7 +23,7 @@ export async function IndexPage({ config, auth }: IndexPageProps) {
       <div className="flex flex-col">
         <span className="font-semibold text-gray-500 mb-1">Collections</span>
         <div className="flex flex-col gap-2">
-          {Object.entries(config.collections).map(([key, collection]) => (
+          {Object.entries(collections).map(([key, collection]) => (
             <CurrentSubrouteLink
               key={key}
               href={`browse/${key}`}
@@ -32,7 +37,7 @@ export async function IndexPage({ config, auth }: IndexPageProps) {
       <div className="flex flex-col">
         <span className="font-semibold text-gray-500 mb-1">Globals</span>
         <div className="flex flex-col gap-2">
-          {Object.entries(config.globals).map(([key, global]) => (
+          {Object.entries(globals).map(([key, global]) => (
             <CurrentSubrouteLink
               key={key}
               href={`edit/${key}`}

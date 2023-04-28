@@ -1,9 +1,9 @@
-import { CatalystCollection, CatalystGlobal } from "../../types";
+import { CatalystDataType } from "../../../types";
 import { FormField } from "./types";
-import mongoClientPromise from "../../mongo";
+import mongoClientPromise from "../../../mongo";
 
 export function getFormFieldsFromDataType(
-  dataType: CatalystCollection | CatalystGlobal,
+  dataType: CatalystDataType,
   data: Record<string, any> = {}
 ): Promise<FormField[]> {
   return Promise.all(

@@ -2,7 +2,7 @@
 
 import { signOut } from "next-auth/react";
 import { useEffect } from "react";
-import { useFirstSubroute } from "../hooks/useFirstSubroute";
+import { useFirstSubroute } from "../../hooks/useFirstSubroute";
 
 export const LogoutLoading: React.FC = () => {
   const subroute = useFirstSubroute();

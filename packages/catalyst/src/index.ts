@@ -1,10 +1,10 @@
-import { UserCatalystConfig } from "./types";
-import { createRootPage } from "./pages/base";
+import { CatalystConfig } from "./types";
+import { createRootPage } from "./ui/pages/base";
 import { createCatalystAuthObject } from "./auth";
 import { createCatalystDataObject } from "./data";
 import { createRootEndpoint } from "./endpoints";
 
-export function createCatalyst<C extends UserCatalystConfig>(userConfig: C) {
+export function createCatalyst<C extends CatalystConfig>(userConfig: C) {
   const config = getConfigWithDefaults(userConfig);
 
   const data = createCatalystDataObject(config);
@@ -23,7 +23,7 @@ export function createCatalyst<C extends UserCatalystConfig>(userConfig: C) {
   };
 }
 
-function getConfigWithDefaults<C extends UserCatalystConfig>(config: C) {
+function getConfigWithDefaults<C extends CatalystConfig>(config: C) {
   return {
     ...config,
     collections: {
@@ -35,7 +35,11 @@ function getConfigWithDefaults<C extends UserCatalystConfig>(config: C) {
             type: "text",
             label: "Email",
           },
-          ...(config.auth ? config.auth.fields : {}),
+          ...(config.collections
+            ? config.collections.users
+              ? config.collections.users
+              : {}
+            : {}),
         },
       },
     },

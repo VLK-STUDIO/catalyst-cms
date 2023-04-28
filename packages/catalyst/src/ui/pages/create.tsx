@@ -1,14 +1,22 @@
-import type { CatalystCollection, CatalystConfig } from "../types";
+import { Session } from "next-auth";
+import type { CatalystConfig, CatalystCollection } from "../../types";
 import { Form } from "../components/form/Form";
 import { getFormFieldsFromDataType } from "../components/form/utils";
+import { canUserCreateCollectionEntry } from "../../access";
+import { redirect } from "next/navigation";
 
 type Props = {
   collection: CatalystCollection;
   name: string;
   i18n: CatalystConfig["i18n"];
+  session: Session;
 };
 
-export async function CreatePage({ collection, i18n, name }: Props) {
+export async function CreatePage({ collection, i18n, name, session }: Props) {
+  if (!canUserCreateCollectionEntry(session, collection)) {
+    redirect("/catalyst/forbidden");
+  }
+
   const fields = await getFormFieldsFromDataType(collection);
 
   return (

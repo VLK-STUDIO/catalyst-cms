@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ComponentProps } from "react";
-import { useFirstSubroute } from "./hooks/useFirstSubroute";
+import { useFirstSubroute } from "../hooks/useFirstSubroute";
 
 type Props = ComponentProps<typeof Link>;
 
