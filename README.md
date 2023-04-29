@@ -42,11 +42,11 @@ The project is a Turborepo monorepo containing the following:
 
 #### Installing dependencies
 
-When working on Catalyst you'll need to clone the repo and run `pnpm install` from the root folder.
+Run `pnpm install` from the root folder.
 
 #### Environment variables
 
-Catalyst expects a MongoDB connection and all the Auth.js-specific environment variables to work correctly. The `.env.example` files in each example show what the setup for a successful login looks like.
+Catalyst expects a MongoDB connection URI and all the Auth.js-specific environment variables to work correctly. The `.env.example` files in each example show what the setup for a successful login looks like.
 
 #### Starting up
 
