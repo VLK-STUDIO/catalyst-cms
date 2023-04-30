@@ -1,10 +1,7 @@
 import { IconPlus } from "@tabler/icons-react";
-import {
-  CatalystConfig,
-  CatalystDataObject,
-  CatalystCollection,
-} from "../../types";
+import { CatalystConfig, CatalystCollection } from "../../types";
 import { CurrentSubrouteLink } from "../components/CurrentSubrouteLink";
+import { CatalystDataObject } from "../../data/types";
 
 type Props<C extends CatalystConfig> = {
   collection: CatalystCollection & { name: string };
@@ -30,7 +27,7 @@ export async function BrowsePage<C extends CatalystConfig>(props: Props<C>) {
           </tr>
         </thead>
         <tbody>
-          {docs.map((doc, index) => (
+          {docs.map((doc: any, index: number) => (
             <tr key={index}>
               {Object.entries(props.collection.fields).map(
                 ([fieldKey, field]) => (
@@ -39,6 +36,10 @@ export async function BrowsePage<C extends CatalystConfig>(props: Props<C>) {
                       <div
                         dangerouslySetInnerHTML={{ __html: doc[fieldKey] }}
                       />
+                    ) : field.type === "reference" ? (
+                      doc[fieldKey][
+                        field.exposedColumn ? field.exposedColumn : "_id"
+                      ]
                     ) : (
                       doc[fieldKey]
                     )}

@@ -19,6 +19,10 @@ export const cms = createCatalyst({
           type: "text",
           label: "Title",
         },
+        description: {
+          type: "text",
+          label: "Description",
+        },
         content: {
           type: "richtext",
           label: "Content",

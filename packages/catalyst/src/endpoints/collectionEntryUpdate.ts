@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { ObjectId } from "mongodb";
 import mongoClientPromise from "../mongo";
-import { CatalystConfig } from "../types";
-import { makePayloadLocalized } from "../utils";
-import { getCatalystServerSession } from "../auth";
+import { CatalystAuth, CatalystConfig } from "../types";
+import { deserializeMongoPayload, makePayloadLocalized } from "../utils";
 import { canUserUpdateDataType } from "../access";
+import { flatten } from "flat";
+import { ObjectId } from "mongodb";
 
 export function isCollectionEntryUpdateEndpoint(req: NextApiRequest) {
   const [typeKind] = req.query.catalyst as string[];
@@ -15,18 +15,17 @@ export function isCollectionEntryUpdateEndpoint(req: NextApiRequest) {
 export async function handleCollectionEntryUpdate(
   config: CatalystConfig,
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
+  auth: CatalystAuth
 ) {
-  // Get query params
   const [_, collectionKey, docId] = req.query.catalyst as string[];
 
-  // Check if collection param is valid
   const collection = config.collections[collectionKey];
   if (!collection) {
     return res.status(404).end();
   }
 
-  const session = await getCatalystServerSession();
+  const session = await auth.getSessionFromRequest(req, res);
 
   if (!canUserUpdateDataType(session, collection)) {
     return res.status(403).json({
@@ -34,7 +33,6 @@ export async function handleCollectionEntryUpdate(
     });
   }
 
-  // Parse JSON body
   let json: any;
   try {
     json = JSON.parse(req.body);
@@ -46,36 +44,33 @@ export async function handleCollectionEntryUpdate(
 
   // TODO: Validate payload
 
-  // Run update hooks
   if (collection.hooks && collection.hooks.beforeUpdate) {
     json = await collection.hooks.beforeUpdate(json);
   }
 
-  // Make sure request locale is valid
   if (req.query.locale && typeof req.query.locale !== "string") {
     return res.status(400).json({ message: "Invalid locale" });
   }
 
-  // Use locale if in query, otherwise use default locale
   const locale = req.query.locale || config.i18n.defaultLocale;
 
-  // Apply locale to localized fields
   const payload = makePayloadLocalized(json, locale, collection.fields);
 
-  // Update document in MongoDB
   const client = await mongoClientPromise;
 
   try {
     await client
       .db()
       .collection(collectionKey)
-      .replaceOne(
+      .updateOne(
         {
           _id: {
             $eq: new ObjectId(docId),
           },
         },
-        payload
+        {
+          $set: flatten(deserializeMongoPayload(payload)),
+        }
       );
   } catch (err) {
     return res.status(500).json({

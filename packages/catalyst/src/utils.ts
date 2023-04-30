@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+import _ from "lodash";
 import { logWarning } from "./logger";
 import { CatalystFields } from "./types";
 
@@ -18,7 +20,7 @@ export const makePayloadLocalized = (
 };
 
 export const delocalizePayload = (
-  payload: Record<string, string | Record<string, string>>,
+  payload: any,
   collectionFields: CatalystFields,
   locale: string,
   fallbackLocale: string
@@ -39,8 +41,10 @@ export const delocalizePayload = (
           return [key, value];
         }
 
+        // @ts-ignore
         if (value[locale]) return [key, value[locale]];
 
+        // @ts-ignore
         return [key, value[fallbackLocale]];
       }
 
@@ -48,3 +52,31 @@ export const delocalizePayload = (
     })
   );
 };
+
+export const makeMongoPayloadSerializable = (payload: any) => {
+  return deepIterateOnKey(payload, (id) => id.toString(), "_id");
+};
+
+export const deserializeMongoPayload = (payload: any) => {
+  return deepIterateOnKey(payload, (id) => new ObjectId(id), "_id");
+};
+
+function deepIterateOnKey(
+  obj: Object,
+  callback: (val: any) => any,
+  key: string
+): any {
+  const newObj: any = {};
+
+  for (const [k, v] of Object.entries(obj)) {
+    if (k === key) {
+      newObj[k] = callback(v);
+    } else if (typeof v === "object" && v !== null) {
+      newObj[k] = deepIterateOnKey(v, callback, key);
+    } else {
+      newObj[k] = v;
+    }
+  }
+
+  return newObj;
+}
