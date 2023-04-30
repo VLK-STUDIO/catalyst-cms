@@ -63,9 +63,7 @@ export type CatalystGetDataFunction<
 
 type ComputedCatalystFields<
   C extends CatalystConfig,
-  F extends
-    | C["collections"][keyof C["collections"]]["fields"]
-    | C["globals"][keyof C["globals"]]["fields"]
+  F extends C["collections"][string]["fields"] | C["globals"][string]["fields"]
 > = {
   [K in keyof F]: F[K] extends CatalystReferenceField<C>
     ? ComputedCatalystFields<C, C["collections"][F[K]["collection"]]["fields"]>
