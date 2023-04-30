@@ -52,8 +52,4 @@ export const cms = createCatalyst({
       },
     },
   },
-  i18n: {
-    locales: ["en", "fr"],
-    defaultLocale: "en",
-  },
 });

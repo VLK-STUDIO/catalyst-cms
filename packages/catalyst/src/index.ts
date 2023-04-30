@@ -5,8 +5,8 @@ import { createCatalystDataObject } from "./data";
 import { createRootEndpoint } from "./endpoints";
 import deepmerge from "deepmerge";
 
-export function createCatalyst<C extends CatalystConfig>(userConfig: C) {
-  const config = getConfigWithDefaults(userConfig) as unknown as C;
+export function createCatalyst<const C extends CatalystConfig>(userConfig: C) {
+  const config = getConfigWithDefaults(userConfig);
 
   const data = createCatalystDataObject(config);
 
@@ -40,5 +40,16 @@ function getConfigWithDefaults<C extends CatalystConfig>(config: C) {
       },
     },
     config
-  );
+  ) as unknown as C & {
+    collections: {
+      users: C["collections"]["users"] & {
+        fields: {
+          email: {
+            type: "text";
+            label: string;
+          };
+        };
+      };
+    };
+  };
 }
