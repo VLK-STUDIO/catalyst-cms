@@ -9,9 +9,9 @@ export type CatalystConfig = {
   globals: {
     [K: string]: CatalystCollection<CatalystConfig>;
   };
-  i18n?: {
+  i18n: {
     defaultLocale: string;
-    locales: string[];
+    locales: readonly string[];
   };
 };
 
