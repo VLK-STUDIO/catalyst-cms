@@ -26,7 +26,9 @@ export function getFormFieldsFromDataType(
             value: data[key] || "",
           };
         case "reference":
-          const { collection: refCollection, exposedColumn } = field;
+          const { collection: refCollection } = field;
+
+          const exposedColumn = field.exposedColumn || "_id";
 
           const client = await mongoClientPromise;
 
@@ -37,27 +39,22 @@ export function getFormFieldsFromDataType(
               {},
               {
                 projection: {
-                  _id: 1,
-                  ...(exposedColumn ? { [exposedColumn]: 1 } : {}),
+                  [exposedColumn]: 1,
                 },
               }
             )
             .toArray();
 
-          const options = refCollectionData.map((doc) => {
-            const id = doc._id.toString();
-
-            return {
-              label: exposedColumn ? doc[exposedColumn] : id,
-              value: id,
-            };
-          });
+          const options = refCollectionData.map((doc) => ({
+            label: doc[exposedColumn],
+            value: doc._id.toString(),
+          }));
 
           return {
             type: "select",
             name: key,
             label,
-            value: data[key] || "",
+            value: data[key] ? data[key][exposedColumn] : "",
             options,
           };
         default:

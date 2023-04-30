@@ -1,116 +1,85 @@
-import { ObjectId } from "mongodb";
 import { createCatalystAuthObject } from "./auth";
-
-export type CatalystDataObject<C extends CatalystConfig> =
-  CatalystCollectionDataObject<C["collections"]> &
-    CatalystGlobalsDataObject<C["globals"]>;
-
-export type CatalystCollectionDataObject<
-  C extends CatalystConfig["collections"]
-> = {
-  [K in keyof C]: {
-    findAsUser: () => Promise<ComputedCatalystFields<C[K]["fields"]>[]>;
-    findOneAsUser: () => Promise<ComputedCatalystFields<C[K]["fields"]>>;
-    find: () => Promise<ComputedCatalystFields<C[K]["fields"]>[]>;
-    findOne: (
-      id: string,
-      locale?: string,
-      options?: { delocalize: boolean }
-    ) => Promise<ComputedCatalystFields<C[K]["fields"]>>;
-  };
-};
-
-export type CatalystGlobalsDataObject<C extends CatalystConfig["globals"]> = {
-  [K in keyof C]: {
-    getAsUser: () => Promise<ComputedCatalystFields<C[K]["fields"]>>;
-    get: () => Promise<ComputedCatalystFields<C[K]["fields"]>>;
-  };
-};
 
 export type CatalystConfig = {
   collections: {
-    users: CatalystCollection;
+    users: CatalystCollection<CatalystConfig>;
   } & {
-    [K: string]: CatalystCollection;
+    [K: string]: CatalystCollection<CatalystConfig>;
   };
   globals: {
-    [K: string]: CatalystGlobal;
+    [K: string]: CatalystCollection<CatalystConfig>;
   };
-  i18n: {
+  i18n?: {
     defaultLocale: string;
     locales: string[];
   };
 };
 
-export type CatalystDataType = CatalystCollection | CatalystGlobal;
+export type CatalystDataType<C extends CatalystConfig> =
+  | CatalystCollection<C>
+  | CatalystGlobal<C>;
 
-export type CatalystCollection = CatalystBaseDataType & {
-  access?: {
-    read?: CatalystAccessControlFunction;
-    update?: CatalystAccessControlFunction;
-    delete?: CatalystAccessControlFunction;
-    create?: CatalystAccessControlFunction;
+export type CatalystCollection<C extends CatalystConfig> =
+  CatalystBaseDataType<C> & {
+    access?: {
+      read?: CatalystAccessControlFunction;
+      update?: CatalystAccessControlFunction;
+      delete?: CatalystAccessControlFunction;
+      create?: CatalystAccessControlFunction;
+    };
+    hooks?: {
+      beforeCreate?: (data: any) => any;
+      beforeUpdate?: (data: any) => any;
+      beforeDelete?: (data: any) => any;
+    };
   };
-  hooks?: {
-    beforeCreate?: (data: any) => any;
-    beforeUpdate?: (data: any) => any;
-    beforeDelete?: (data: any) => any;
-  };
-};
 
-export type CatalystGlobal = CatalystBaseDataType & {
-  access?: {
-    read?: CatalystAccessControlFunction;
-    update?: CatalystAccessControlFunction;
+export type CatalystGlobal<C extends CatalystConfig> =
+  CatalystBaseDataType<C> & {
+    access?: {
+      read?: CatalystAccessControlFunction;
+      update?: CatalystAccessControlFunction;
+    };
+    hooks?: {
+      beforeUpdate?: (data: any) => any;
+    };
   };
-  hooks?: {
-    beforeUpdate?: (data: any) => any;
-  };
-};
 
-export type CatalystBaseDataType = {
+export type CatalystBaseDataType<C extends CatalystConfig> = {
   label: string;
   previewUrl?: string;
-  fields: CatalystFields;
+  fields: CatalystFields<C>;
 };
+
+export type CatalystAuth = ReturnType<typeof createCatalystAuthObject>;
 
 type CatalystAccessControlFunction = (user: any) => boolean;
 
-type ComputedCatalystFields<T extends CatalystFields> = {
-  [K in keyof T]: K extends "_id"
-    ? ObjectId
-    : T[K] extends "text"
-    ? string
-    : T[K] extends "richtext"
-    ? string
-    : never;
+export type CatalystFields<C extends CatalystConfig> = {
+  [K: string]: CatalystField<C>;
 };
 
-export type CatalystFields = {
-  [K: string]: CatalystField;
-};
+export type CatalystField<C extends CatalystConfig> = CatalystFieldBase &
+  (CatalystTextField | CatalystRichTextField | CatalystReferenceField<C>);
 
-export type CatalystField = CatalystFieldBase &
-  (CatalystTextField | CatalystRichTextField | CatalystReferenceField);
-
-type CatalystTextField = CatalystFieldBase & {
+export type CatalystTextField = CatalystFieldBase & {
   type: "text";
   localized?: boolean;
   hooks?: FieldHooks<string>;
 };
 
-type CatalystRichTextField = CatalystFieldBase & {
+export type CatalystRichTextField = CatalystFieldBase & {
   type: "richtext";
   localized?: boolean;
   hooks?: FieldHooks<string>;
 };
 
-type CatalystReferenceField = {
-  label: string;
-  type: "reference";
-  collection: string;
-  exposedColumn?: string;
-};
+export type CatalystReferenceField<C extends CatalystConfig> =
+  CatalystFieldBase & {
+    type: "reference";
+    collection: keyof C["collections"];
+    exposedColumn?: string;
+  };
 
 type CatalystFieldBase = {
   label: string;
@@ -120,5 +89,3 @@ type FieldHooks<T> = {
   beforeCreate?: (value: T) => T | Promise<T>;
   beforeUpdate?: (value: T) => T | Promise<T>;
 };
-
-export type CatalystAuth = ReturnType<typeof createCatalystAuthObject>;

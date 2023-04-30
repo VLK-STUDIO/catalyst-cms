@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { handleAuthRequest, isAuthRequest } from "../auth";
-import { CatalystConfig } from "../types";
+import { CatalystAuth, CatalystConfig } from "../types";
 import {
   isCollectionEntryCreationEndpoint,
   handleCollectionEntryCreation,
@@ -11,7 +11,10 @@ import {
   handleCollectionEntryUpdate,
 } from "./collectionEntryUpdate";
 
-export function createRootEndpoint<C extends CatalystConfig>(config: C) {
+export function createRootEndpoint<C extends CatalystConfig>(
+  config: C,
+  auth: CatalystAuth
+) {
   return async function CatalystRouteHandler(
     req: NextApiRequest,
     res: NextApiResponse
@@ -23,9 +26,9 @@ export function createRootEndpoint<C extends CatalystConfig>(config: C) {
 
     // Handle Catalyst routes
     if (isCollectionEntryCreationEndpoint(req))
-      return await handleCollectionEntryCreation(config, req, res);
+      return await handleCollectionEntryCreation(config, req, res, auth);
     else if (isCollectionEntryUpdateEndpoint(req))
-      return await handleCollectionEntryUpdate(config, req, res);
+      return await handleCollectionEntryUpdate(config, req, res, auth);
     else if (isGlobalUpsertEndpoint(req))
       return await handleGlobalUpsert(config, req, res);
     else {

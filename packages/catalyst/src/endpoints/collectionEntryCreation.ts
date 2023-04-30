@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import mongoClientPromise from "../mongo";
-import { CatalystConfig } from "../types";
-import { makePayloadLocalized } from "../utils";
-import { getCatalystServerSession } from "../auth";
+import { CatalystAuth, CatalystConfig } from "../types";
+import { deserializeMongoPayload, makePayloadLocalized } from "../utils";
 import { canUserCreateCollectionEntry } from "../access";
 
 export function isCollectionEntryCreationEndpoint(req: NextApiRequest) {
@@ -14,7 +13,8 @@ export function isCollectionEntryCreationEndpoint(req: NextApiRequest) {
 export async function handleCollectionEntryCreation(
   config: CatalystConfig,
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
+  auth: CatalystAuth
 ) {
   // Get query params
   const [_, collectionKey] = req.query.catalyst as string[];
@@ -25,7 +25,7 @@ export async function handleCollectionEntryCreation(
     return res.status(404).end();
   }
 
-  const session = await getCatalystServerSession();
+  const session = await auth.getSessionFromRequest(req, res);
 
   if (!canUserCreateCollectionEntry(session, collection)) {
     return res.status(403).json({
@@ -69,10 +69,10 @@ export async function handleCollectionEntryCreation(
     const result = await client
       .db()
       .collection(collectionKey)
-      .insertOne(payload);
+      .insertOne(deserializeMongoPayload(payload));
 
     return res.status(201).json({
-      _id: result.insertedId.toString(),
+      _id: result.insertedId,
     });
   } catch (err) {
     return res.status(500).json({

@@ -3,15 +3,16 @@ import { createRootPage } from "./ui/pages/base";
 import { createCatalystAuthObject } from "./auth";
 import { createCatalystDataObject } from "./data";
 import { createRootEndpoint } from "./endpoints";
+import deepmerge from "deepmerge";
 
-export function createCatalyst<C extends CatalystConfig>(userConfig: C) {
+export function createCatalyst<const C extends CatalystConfig>(userConfig: C) {
   const config = getConfigWithDefaults(userConfig);
 
   const data = createCatalystDataObject(config);
 
   const auth = createCatalystAuthObject();
 
-  const rootEndpoint = createRootEndpoint(config);
+  const rootEndpoint = createRootEndpoint(config, auth);
 
   const rootPage = createRootPage(config, data, auth);
 
@@ -24,24 +25,31 @@ export function createCatalyst<C extends CatalystConfig>(userConfig: C) {
 }
 
 function getConfigWithDefaults<C extends CatalystConfig>(config: C) {
-  return {
-    ...config,
-    collections: {
-      ...config.collections,
-      users: {
-        label: "Users",
-        fields: {
-          email: {
-            type: "text",
-            label: "Email",
+  return deepmerge(
+    {
+      collections: {
+        users: {
+          label: "Users",
+          fields: {
+            email: {
+              type: "text",
+              label: "Email",
+            },
           },
-          ...(config.collections
-            ? config.collections.users
-              ? config.collections.users
-              : {}
-            : {}),
         },
       },
     },
+    config
+  ) as unknown as C & {
+    collections: {
+      users: C["collections"]["users"] & {
+        fields: {
+          email: {
+            type: "text";
+            label: string;
+          };
+        };
+      };
+    };
   };
 }

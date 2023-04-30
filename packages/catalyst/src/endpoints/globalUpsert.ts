@@ -1,9 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { ObjectId } from "mongodb";
 import flatten from "flat";
 import mongoClientPromise from "../mongo";
 import { CatalystConfig } from "../types";
-import { makePayloadLocalized } from "../utils";
+import { deserializeMongoPayload, makePayloadLocalized } from "../utils";
 import { canUserUpdateDataType } from "../access";
 import { getCatalystServerSession } from "../auth";
 
@@ -70,13 +69,9 @@ export async function handleGlobalUpsert(
       .db()
       .collection(globalKey)
       .updateOne(
+        {},
         {
-          _id: {
-            $eq: new ObjectId("ca7a1157610ba1ca7a1157ff"),
-          },
-        },
-        {
-          $set: flattenedPayload,
+          $set: deserializeMongoPayload(flattenedPayload),
         },
         {
           upsert: true,

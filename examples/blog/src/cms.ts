@@ -19,6 +19,10 @@ export const cms = createCatalyst({
           type: "text",
           label: "Title",
         },
+        description: {
+          type: "text",
+          label: "Description",
+        },
         content: {
           type: "richtext",
           label: "Content",
@@ -47,9 +51,5 @@ export const cms = createCatalyst({
         },
       },
     },
-  },
-  i18n: {
-    locales: ["en", "fr"],
-    defaultLocale: "en",
   },
 });

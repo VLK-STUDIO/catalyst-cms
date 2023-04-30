@@ -24,9 +24,9 @@ export function canUserReadDataType(
   user: Session | null,
   dataType: CatalystDataType
 ) {
-  if (!dataType.access) return false;
+  if (!dataType.access) return true;
 
-  if (!dataType.access.read) return false;
+  if (!dataType.access.read) return true;
 
   return dataType.access.read(user);
 }
@@ -35,9 +35,9 @@ export function canUserUpdateDataType(
   user: Session | null,
   dataType: CatalystDataType
 ) {
-  if (!dataType.access) return false;
+  if (!dataType.access) return true;
 
-  if (!dataType.access.update) return false;
+  if (!dataType.access.update) return true;
 
   return dataType.access.update(user);
 }
@@ -46,9 +46,9 @@ export function canUserCreateCollectionEntry(
   user: Session | null,
   collection: CatalystCollection
 ) {
-  if (!collection.access) return false;
+  if (!collection.access) return true;
 
-  if (!collection.access.create) return false;
+  if (!collection.access.create) return true;
 
   return collection.access.create(user);
 }
@@ -57,9 +57,9 @@ export function canUserDeleteCollectionEntry(
   user: Session | null,
   collection: CatalystCollection
 ) {
-  if (!collection.access) return false;
+  if (!collection.access) return true;
 
-  if (!collection.access.delete) return false;
+  if (!collection.access.delete) return true;
 
   return collection.access.delete(user);
 }

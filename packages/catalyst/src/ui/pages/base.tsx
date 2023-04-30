@@ -1,7 +1,7 @@
 import "@unocss/reset/tailwind-compat.css";
 import "../uno.css";
 import { notFound, redirect } from "next/navigation";
-import { CatalystAuth, CatalystConfig, CatalystDataObject } from "../../types";
+import { CatalystAuth, CatalystConfig } from "../../types";
 import { IndexPage } from ".";
 import { BrowsePage } from "./browse";
 import { CreatePage } from "./create";
@@ -10,6 +10,7 @@ import LoginPage from "./login";
 import LogoutPage from "./logout";
 import { EditGlobalPage } from "./editGlobal";
 import { ForbiddenPage } from "./forbidden";
+import { CatalystDataObject } from "../../data/types";
 
 type RootPageProps = {
   params: {

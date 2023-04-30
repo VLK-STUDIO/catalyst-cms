@@ -50,6 +50,8 @@ export function isAuthRequest(req: NextApiRequest) {
 export function createCatalystAuthObject() {
   return {
     getSession: () => getServerSession(authOptions),
+    getSessionFromRequest: (req: NextApiRequest, res: NextApiResponse) =>
+      getServerSession(req, res, authOptions),
   };
 }
 
