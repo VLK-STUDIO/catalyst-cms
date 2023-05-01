@@ -22,7 +22,7 @@ export function getGlobalsUserCanRead(config: CatalystConfig, user: Session) {
 
 export function canUserReadDataType(
   user: Session | null,
-  dataType: CatalystDataType
+  dataType: CatalystDataType<any>
 ) {
   if (!dataType.access) return true;
 
@@ -33,7 +33,7 @@ export function canUserReadDataType(
 
 export function canUserUpdateDataType(
   user: Session | null,
-  dataType: CatalystDataType
+  dataType: CatalystDataType<any>
 ) {
   if (!dataType.access) return true;
 
@@ -44,7 +44,7 @@ export function canUserUpdateDataType(
 
 export function canUserCreateCollectionEntry(
   user: Session | null,
-  collection: CatalystCollection
+  collection: CatalystCollection<any>
 ) {
   if (!collection.access) return true;
 
@@ -55,7 +55,7 @@ export function canUserCreateCollectionEntry(
 
 export function canUserDeleteCollectionEntry(
   user: Session | null,
-  collection: CatalystCollection
+  collection: CatalystCollection<any>
 ) {
   if (!collection.access) return true;
 

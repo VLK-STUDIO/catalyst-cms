@@ -18,7 +18,7 @@ type Props = {
   title: string;
   previewUrl?: string;
   i18n: {
-    locales: string[];
+    locales: readonly string[];
     defaultLocale: string;
   };
   typeName: string;

@@ -40,7 +40,7 @@ export type CatalystFindOneDataFunction<
   C extends CatalystConfig,
   K extends keyof C["collections"]
 > = (
-  options?: Omit<
+  options: Omit<
     WithRequired<
       QueryOptions<ComputedCatalystFields<C, C["collections"][K]["fields"]>>,
       "filters"

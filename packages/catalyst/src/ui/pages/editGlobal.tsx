@@ -1,19 +1,16 @@
 import { redirect } from "next/navigation";
 import { canUserUpdateDataType } from "../../access";
-import type {
-  CatalystConfig,
-  CatalystDataObject,
-  CatalystGlobal,
-} from "../../types";
+import type { CatalystConfig, CatalystGlobal } from "../../types";
 import { Form } from "../components/form/Form";
 import { getFormFieldsFromDataType } from "../components/form/utils";
 import { Session } from "next-auth";
+import { CatalystDataObject } from "../../data/types";
 
 type Props<C extends CatalystConfig> = {
   i18n: C["i18n"];
   data: CatalystDataObject<C>;
   searchParams?: Record<string, string>;
-  global: CatalystGlobal;
+  global: CatalystGlobal<C>;
   name: string;
   session: Session;
 };

@@ -4,7 +4,7 @@ import { CurrentSubrouteLink } from "../components/CurrentSubrouteLink";
 import { CatalystDataObject } from "../../data/types";
 
 type Props<C extends CatalystConfig> = {
-  collection: CatalystCollection & { name: string };
+  collection: CatalystCollection<C> & { name: string };
   data: CatalystDataObject<C>;
 };
 
