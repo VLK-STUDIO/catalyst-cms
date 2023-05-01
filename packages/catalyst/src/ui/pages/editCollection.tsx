@@ -7,6 +7,7 @@ import { canUserUpdateDataType } from "../../access";
 import { redirect } from "next/navigation";
 import { CatalystDataObject } from "../../data/types";
 import { ObjectId } from "mongodb";
+import { getComputedPreviewUrl } from "../../preview";
 
 type Props<C extends CatalystConfig> = {
   i18n: C["i18n"];
@@ -43,6 +44,10 @@ export async function EditCollectionPage<C extends CatalystConfig>({
 
   const fields = await getFormFieldsFromDataType(collection, doc);
 
+  const previewUrl = collection.previewUrl
+    ? getComputedPreviewUrl(collection.previewUrl, doc)
+    : undefined;
+
   return (
     <Form
       fields={fields}
@@ -51,7 +56,7 @@ export async function EditCollectionPage<C extends CatalystConfig>({
       endpoint={`/api/collection/${name}/${docId}`}
       submitText="Update"
       title={`EDIT ${name}`}
-      previewUrl={collection.previewUrl}
+      previewUrl={previewUrl}
       typeName={name as string}
     />
   );

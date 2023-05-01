@@ -12,7 +12,7 @@ export const cms = createCatalyst({
       },
     },
     articles: {
-      previewUrl: "http://localhost:3000/",
+      previewUrl: "http://localhost:3000/:_id",
       label: "Articles",
       fields: {
         title: {
