@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 type Props = {
-  locales: string[];
+  locales: readonly string[];
   defaultLocale: string;
 };
 

@@ -12,7 +12,7 @@ type Props<C extends CatalystConfig> = {
   i18n: C["i18n"];
   data: CatalystDataObject<C>;
   searchParams?: Record<string, string>;
-  collection: CatalystCollection;
+  collection: CatalystCollection<C>;
   name: string;
   docId: string;
   session: Session;

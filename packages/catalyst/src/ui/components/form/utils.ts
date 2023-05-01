@@ -3,7 +3,7 @@ import { FormField } from "./types";
 import mongoClientPromise from "../../../mongo";
 
 export function getFormFieldsFromDataType(
-  dataType: CatalystDataType,
+  dataType: CatalystDataType<any>,
   data: Record<string, any> = {}
 ): Promise<FormField[]> {
   return Promise.all(
@@ -34,7 +34,7 @@ export function getFormFieldsFromDataType(
 
           const refCollectionData = await client
             .db()
-            .collection(refCollection)
+            .collection(refCollection as string)
             .find(
               {},
               {

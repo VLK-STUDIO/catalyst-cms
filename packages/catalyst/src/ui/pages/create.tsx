@@ -6,7 +6,7 @@ import { canUserCreateCollectionEntry } from "../../access";
 import { redirect } from "next/navigation";
 
 type Props = {
-  collection: CatalystCollection;
+  collection: CatalystCollection<any>;
   name: string;
   i18n: CatalystConfig["i18n"];
   session: Session;

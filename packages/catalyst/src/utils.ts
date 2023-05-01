@@ -1,12 +1,12 @@
 import { ObjectId } from "mongodb";
 import _ from "lodash";
 import { logWarning } from "./logger";
-import { CatalystFields } from "./types";
+import { CatalystConfig, CatalystFields } from "./types";
 
 export const makePayloadLocalized = (
   payload: any,
   locale: string,
-  collectionFields: CatalystFields
+  collectionFields: CatalystConfig["collections"][string]["fields"]
 ) => {
   return Object.fromEntries(
     Object.entries(payload).map(([key, value]) => {
@@ -21,7 +21,7 @@ export const makePayloadLocalized = (
 
 export const delocalizePayload = (
   payload: any,
-  collectionFields: CatalystFields,
+  collectionFields: CatalystConfig["collections"][string]["fields"],
   locale: string,
   fallbackLocale: string
 ) => {

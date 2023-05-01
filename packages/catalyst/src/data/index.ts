@@ -26,7 +26,7 @@ export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
         findOne: createFindOneFunction(key, config),
       },
     };
-  }, {} as CatalystCollectionDataObject<C["collections"]>);
+  }, {} as CatalystCollectionDataObject<C>);
 
   const globalsDataObject = Object.keys(globals).reduce((acc, key) => {
     return {
@@ -36,7 +36,7 @@ export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
         get: createGetFunction(key, config),
       },
     };
-  }, {} as CatalystGlobalsDataObject<C["globals"]>);
+  }, {} as CatalystGlobalsDataObject<C>);
 
   return {
     ...collectionsDataObject,
@@ -50,7 +50,10 @@ function createFindAsUserFunction(
 ) {
   const collection = config.collections[collectionKey];
 
-  const func: CatalystFindDataFunction<any> = async (options) => {
+  const func: CatalystFindDataFunction<
+    typeof config,
+    typeof collectionKey
+  > = async (options) => {
     const session = await getCatalystServerSession();
 
     if (!canUserReadDataType(session, collection)) {
@@ -71,7 +74,10 @@ function createFindOneAsUserFunction(
 ) {
   const collection = config.collections[collectionKey];
 
-  const func: CatalystFindOneDataFunction<any> = async (options) => {
+  const func: CatalystFindOneDataFunction<
+    typeof config,
+    typeof collectionKey
+  > = async (options) => {
     const session = await getCatalystServerSession();
 
     if (!canUserReadDataType(session, collection)) {
@@ -89,7 +95,10 @@ function createFindOneAsUserFunction(
 function createFindFunction(collectionKey: string, config: CatalystConfig) {
   const collection = config.collections[collectionKey];
 
-  const func: CatalystFindDataFunction<any> = async (options = {}) => {
+  const func: CatalystFindDataFunction<
+    typeof config,
+    typeof collectionKey
+  > = async (options = {}) => {
     const pipeline = createPipeline(options, collection);
 
     const client = await mongoClientPromise;
@@ -121,7 +130,10 @@ function createFindOneFunction<C extends CatalystConfig>(
 ) {
   const collection = config.collections[collectionKey];
 
-  const func: CatalystFindOneDataFunction<any> = async (options) => {
+  const func: CatalystFindOneDataFunction<
+    typeof config,
+    typeof collectionKey
+  > = async (options) => {
     const pipeline = createPipeline({ ...options, limit: 1 }, collection);
 
     const client = await mongoClientPromise;
@@ -150,7 +162,9 @@ function createFindOneFunction<C extends CatalystConfig>(
 function createGetAsUserFunction(globalKey: string, config: CatalystConfig) {
   const global = config.globals[globalKey];
 
-  const func: CatalystGetDataFunction<any> = async (options = {}) => {
+  const func: CatalystGetDataFunction<typeof config, typeof globalKey> = async (
+    options = {}
+  ) => {
     const session = await getCatalystServerSession();
 
     if (!canUserReadDataType(session, global)) {
@@ -168,7 +182,9 @@ function createGetAsUserFunction(globalKey: string, config: CatalystConfig) {
 function createGetFunction(globalKey: string, config: CatalystConfig) {
   const global = config.globals[globalKey];
 
-  const func: CatalystGetDataFunction<any> = async (options = {}) => {
+  const func: CatalystGetDataFunction<typeof config, typeof globalKey> = async (
+    options = {}
+  ) => {
     const pipeline = createPipeline(
       {
         ...options,
@@ -202,7 +218,7 @@ function createGetFunction(globalKey: string, config: CatalystConfig) {
 
 function createPipeline(
   options: QueryOptions<any>,
-  dataType: CatalystDataType
+  dataType: CatalystDataType<any>
 ) {
   const pipeline: Array<any> = [];
 
