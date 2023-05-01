@@ -12,6 +12,7 @@ import {
   CatalystGlobalsDataObject,
   QueryOptions,
 } from "./types";
+import { getLivePreviewDataForCollection } from "../preview";
 
 export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
   const { collections, globals } = config;
@@ -134,6 +135,12 @@ function createFindOneFunction<C extends CatalystConfig>(
     typeof config,
     typeof collectionKey
   > = async (options) => {
+    const livePreviewData = getLivePreviewDataForCollection(collectionKey);
+
+    if (livePreviewData) {
+      return livePreviewData;
+    }
+
     const pipeline = createPipeline({ ...options, limit: 1 }, collection);
 
     const client = await mongoClientPromise;

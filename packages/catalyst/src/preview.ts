@@ -7,5 +7,17 @@ export const getLivePreviewDataForCollection = (typeName: string) => {
     return null;
   }
 
-  return JSON.parse(data);
+  return JSON.parse(decodeURIComponent(data));
 };
+
+export function getComputedPreviewUrl(url: string, params: any): string {
+  let computedUrl = url;
+
+  for (const [key, value] of Object.entries(params)) {
+    if (typeof value === "string" || typeof value === "number") {
+      computedUrl = computedUrl.replace(`:${key}`, String(value));
+    }
+  }
+
+  return computedUrl;
+}

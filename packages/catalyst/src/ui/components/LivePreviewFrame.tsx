@@ -18,8 +18,9 @@ export const LivePreviewFrame: React.FC<Props> = (props) => {
   useEffect(() => {
     wretch(props.url)
       .headers({
-        [`x-catalyst-live-preview-${props.typeName}`]:
-          JSON.stringify(debouncedData),
+        [`x-catalyst-live-preview-${props.typeName}`]: encodeURIComponent(
+          JSON.stringify(debouncedData)
+        ),
       })
       .get()
       .text()
