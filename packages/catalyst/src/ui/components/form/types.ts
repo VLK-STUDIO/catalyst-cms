@@ -5,7 +5,7 @@ export type SelectFormField = FormFieldBase & {
   value: string;
   options: Array<{
     label: string;
-    value: string;
+    value: any;
   }>;
 };
 

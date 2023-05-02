@@ -20,7 +20,7 @@ export const RichTextInput: React.FC<Props> = memo(
       content: props.defaultValue,
       editorProps: {
         attributes: {
-          class: "p-2 h-32 overflow-y-scroll focus:outline-none",
+          class: "p-2 h-48 overflow-y-scroll focus:outline-none",
           id,
         },
       },

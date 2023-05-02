@@ -133,6 +133,17 @@ export const deserializeMongoPayload = (
 };
 
 /**
+ * Recursively iterates through an object and
+ * calls `.toString()` on all fields named `_id`
+ *
+ * @param payload Anything with Object IDs
+ * @returns payload with Object IDs converted to strings
+ */
+export function convertObjectIdsToString(payload: any) {
+  return deepIterateOnKey(payload, "_id", (val: ObjectId) => val.toString());
+}
+
+/**
  * Recursively iterates through an object and executes a callback
  * when a target key is found.
  *

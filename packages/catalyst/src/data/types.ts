@@ -80,6 +80,7 @@ export type QueryOptions<T extends Record<string, any>> = {
   locale?: string;
   delocalize?: boolean;
   limit?: number;
+  autopopulate?: boolean;
 };
 
 // Utility type to make certain fields required

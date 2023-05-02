@@ -1,6 +1,6 @@
 import type { CatalystConfig } from "../../types";
 import { Form } from "../components/form/Form";
-import { getFormFieldsFromDataType } from "../components/form/utils";
+import { getFormFieldsFromDataType } from "./utils";
 import { CatalystCollection } from "../../types";
 import { Session } from "next-auth";
 import { canUserUpdateDataType } from "../../access";
