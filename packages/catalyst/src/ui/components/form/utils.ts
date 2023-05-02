@@ -1,6 +1,7 @@
 import { CatalystDataType } from "../../../types";
 import { FormField } from "./types";
 import mongoClientPromise from "../../../mongo";
+import { makeMongoPayloadSerializable } from "../../../utils";
 
 export function getFormFieldsFromDataType(
   dataType: CatalystDataType<any>,
@@ -54,7 +55,7 @@ export function getFormFieldsFromDataType(
             type: "select",
             name: key,
             label,
-            value: data[key] ? data[key][exposedColumn] : "",
+            value: data[key] || "",
             options,
           };
         default:

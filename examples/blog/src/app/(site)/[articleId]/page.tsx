@@ -15,6 +15,7 @@ export default async function ArticlePage({ params }: Props) {
         $eq: new ObjectId(params.articleId),
       },
     },
+    include: ["title", "author", "content"],
   });
 
   return (

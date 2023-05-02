@@ -61,7 +61,16 @@ export async function handleCollectionEntryCreation(
   const locale = req.query.locale || config.i18n.defaultLocale;
 
   // Apply locale to localized fields
-  const payload = makePayloadLocalized(json, locale, collection.fields);
+  const localizedPayload = makePayloadLocalized(
+    json,
+    locale,
+    collection.fields
+  );
+
+  const deserializedPayload = deserializeMongoPayload(
+    localizedPayload,
+    collection.fields
+  );
 
   // Insert document into MongoDB
   const client = await mongoClientPromise;
@@ -69,7 +78,7 @@ export async function handleCollectionEntryCreation(
     const result = await client
       .db()
       .collection(collectionKey)
-      .insertOne(deserializeMongoPayload(payload));
+      .insertOne(deserializedPayload);
 
     return res.status(201).json({
       _id: result.insertedId,
