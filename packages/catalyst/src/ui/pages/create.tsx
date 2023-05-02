@@ -1,7 +1,7 @@
 import { Session } from "next-auth";
 import type { CatalystConfig, CatalystCollection } from "../../types";
 import { Form } from "../components/form/Form";
-import { getFormFieldsFromDataType } from "../components/form/utils";
+import { getFormFieldsFromDataType } from "./utils";
 import { canUserCreateCollectionEntry } from "../../access";
 import { redirect } from "next/navigation";
 

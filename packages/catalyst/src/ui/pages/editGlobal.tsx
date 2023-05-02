@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { canUserUpdateDataType } from "../../access";
 import type { CatalystConfig, CatalystGlobal } from "../../types";
 import { Form } from "../components/form/Form";
-import { getFormFieldsFromDataType } from "../components/form/utils";
+import { getFormFieldsFromDataType } from "./utils";
 import { Session } from "next-auth";
 import { CatalystDataObject } from "../../data/types";
 

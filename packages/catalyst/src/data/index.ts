@@ -238,22 +238,30 @@ function createPipeline(
     });
   }
 
-  const referenceFields: [string, any][] = [];
+  const referenceFields: Record<string, string> = {};
 
   if (options.include) {
     for (const includedColumn of options.include) {
       const field = dataType.fields[includedColumn as string];
 
       if (field.type === "reference") {
-        referenceFields.push([includedColumn as string, field]);
+        referenceFields[includedColumn as string] = field.collection as string;
       }
     }
   }
 
-  for (const [column, field] of referenceFields) {
+  if (options.autopopulate) {
+    for (const [column, field] of Object.entries(dataType.fields)) {
+      if (field.type === "reference") {
+        referenceFields[column] = field.collection as string;
+      }
+    }
+  }
+
+  for (const [column, refCollection] of Object.entries(referenceFields)) {
     pipeline.push({
       $lookup: {
-        from: field.collection,
+        from: refCollection,
         localField: column,
         foreignField: "_id",
         as: column,
@@ -273,7 +281,7 @@ function createPipeline(
     });
   }
 
-  for (const [column] of referenceFields) {
+  for (const [column] of Object.entries(referenceFields)) {
     pipeline.push({
       $unwind: {
         path: `$${column}`,

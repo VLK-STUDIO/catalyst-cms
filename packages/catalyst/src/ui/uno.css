@@ -15,7 +15,7 @@
 .contents{display:contents;}
 .hidden{display:none;}
 .h-11{height:2.75rem;}
-.h-32{height:8rem;}
+.h-48{height:12rem;}
 .h-5{height:1.25rem;}
 .h-full{height:100%;}
 .max-w-lg{max-width:32rem;}
@@ -35,6 +35,7 @@
 .gap-8{grid-gap:2rem;gap:2rem;}
 .overflow-hidden{overflow:hidden;}
 .overflow-y-scroll{overflow-y:scroll;}
+.whitespace-nowrap{white-space:nowrap;}
 .border{border-width:1px;}
 .border-b{border-bottom-width:1px;}
 .border-l{border-left-width:1px;}

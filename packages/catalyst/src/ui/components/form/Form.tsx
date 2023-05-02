@@ -9,6 +9,7 @@ import { FormElements } from "./FormElements";
 import { useMemo } from "react";
 import { FormField } from "./types";
 import clsx from "clsx";
+import { getObjectWithDepopulatedReferences } from "./utils";
 
 type Props = {
   fields: FormField[];
@@ -49,9 +50,14 @@ export const Form: React.FC<Props> = ({
   });
 
   const onSubmit = form.handleSubmit(async (data) => {
+    const depopulatedData = getObjectWithDepopulatedReferences(data);
+
+    console.log("ORIGINAL DATA:", data);
+    console.log("DEPOPULATED DATA:", depopulatedData);
+
     const res = await fetch(`${endpoint}${locale ? `?locale=${locale}` : ""}`, {
       method,
-      body: JSON.stringify(data),
+      body: JSON.stringify(depopulatedData),
     });
 
     if (!res.ok) {

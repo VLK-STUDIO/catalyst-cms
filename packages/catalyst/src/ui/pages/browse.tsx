@@ -9,7 +9,9 @@ type Props<C extends CatalystConfig> = {
 };
 
 export async function BrowsePage<C extends CatalystConfig>(props: Props<C>) {
-  const docs = await props.data[props.collection.name].findAsUser();
+  const docs = await props.data[props.collection.name].findAsUser({
+    autopopulate: true,
+  });
 
   return (
     <div className="flex flex-col p-16 bg-gray-100 h-full">
@@ -35,6 +37,7 @@ export async function BrowsePage<C extends CatalystConfig>(props: Props<C>) {
                     {field.type === "richtext" ? (
                       <div
                         dangerouslySetInnerHTML={{ __html: doc[fieldKey] }}
+                        className="whitespace-nowrap"
                       />
                     ) : field.type === "reference" ? (
                       doc[fieldKey][
