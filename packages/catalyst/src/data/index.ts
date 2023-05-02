@@ -117,7 +117,8 @@ function createFindFunction(collectionKey: string, config: CatalystConfig) {
           collection.fields,
           options.locale || config.i18n.defaultLocale,
           config.i18n.defaultLocale
-        )
+        ),
+        collection.fields
       )
     );
   };
@@ -158,7 +159,8 @@ function createFindOneFunction<C extends CatalystConfig>(
           collection.fields,
           options.locale || config.i18n.defaultLocale,
           config.i18n.defaultLocale
-        )
+        ),
+        collection.fields
       )
     )[0];
   };
@@ -215,7 +217,8 @@ function createGetFunction(globalKey: string, config: CatalystConfig) {
           global.fields,
           options.locale || config.i18n.defaultLocale,
           config.i18n.defaultLocale
-        )
+        ),
+        global.fields
       )
     )[0];
   };
@@ -243,12 +246,6 @@ function createPipeline(
 
       if (field.type === "reference") {
         referenceFields.push([includedColumn as string, field]);
-      }
-    }
-  } else {
-    for (const [column, field] of Object.entries(dataType.fields)) {
-      if (field.type === "reference") {
-        referenceFields.push([column, field]);
       }
     }
   }

@@ -54,7 +54,19 @@ export async function handleCollectionEntryUpdate(
 
   const locale = req.query.locale || config.i18n.defaultLocale;
 
-  const payload = makePayloadLocalized(json, locale, collection.fields);
+  const localizedPayload = makePayloadLocalized(
+    json,
+    locale,
+    collection.fields
+  );
+  const deserializedPayload = deserializeMongoPayload(
+    localizedPayload,
+    collection.fields
+  );
+
+  // Flatten payload into nested string paths with dots
+  // for atomic updates in Mongo
+  const flattenedPayload = flatten(deserializedPayload);
 
   const client = await mongoClientPromise;
 
@@ -69,7 +81,7 @@ export async function handleCollectionEntryUpdate(
           },
         },
         {
-          $set: flatten(deserializeMongoPayload(payload)),
+          $set: flattenedPayload,
         }
       );
   } catch (err) {

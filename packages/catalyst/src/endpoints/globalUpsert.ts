@@ -57,26 +57,28 @@ export async function handleGlobalUpsert(
   const locale = req.query.locale || config.i18n.defaultLocale;
 
   // Apply locale to localized fields
-  const payload = makePayloadLocalized(json, locale, global.fields);
+  const localizedPayload = makePayloadLocalized(json, locale, global.fields);
+
+  const deserializedPayload = deserializeMongoPayload(
+    localizedPayload,
+    global.fields
+  );
 
   // Flatten localized data for atomic updates in mongo
-  const flattenedPayload = flatten(payload);
+  const flattenedPayload = flatten(deserializedPayload);
 
   // Update document in MongoDB
   const client = await mongoClientPromise;
   try {
-    await client
-      .db()
-      .collection(globalKey)
-      .updateOne(
-        {},
-        {
-          $set: deserializeMongoPayload(flattenedPayload),
-        },
-        {
-          upsert: true,
-        }
-      );
+    await client.db().collection(globalKey).updateOne(
+      {},
+      {
+        $set: flattenedPayload,
+      },
+      {
+        upsert: true,
+      }
+    );
   } catch (err) {
     return res.status(500).json({
       error: "Failed to update document: " + (err as Error).message,
