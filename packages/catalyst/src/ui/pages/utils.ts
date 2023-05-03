@@ -57,7 +57,7 @@ export function getFormFieldsFromDataType(
             type: "select",
             name: key,
             label,
-            value: initialOption ? initialOption.value : "",
+            value: initialOption ? initialOption.value : options[0].value,
             options,
           };
         default:

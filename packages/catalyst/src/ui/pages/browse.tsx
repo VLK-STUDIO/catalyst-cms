@@ -35,10 +35,7 @@ export async function BrowsePage<C extends CatalystConfig>(props: Props<C>) {
                 ([fieldKey, field]) => (
                   <td key={fieldKey} className="py-2 text-gray-600">
                     {field.type === "richtext" ? (
-                      <div
-                        dangerouslySetInnerHTML={{ __html: doc[fieldKey] }}
-                        className="whitespace-nowrap"
-                      />
+                      <div>{doc[fieldKey].replace(/<[^>]*>?/gm, "")}</div>
                     ) : field.type === "reference" ? (
                       doc[fieldKey][
                         field.exposedColumn ? field.exposedColumn : "_id"
