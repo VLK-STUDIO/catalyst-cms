@@ -51,3 +51,7 @@ Catalyst expects a MongoDB connection URI and all the Auth.js-specific environme
 #### Starting up
 
 After installing the dependencies and setting up the env variables, navigate to the folder of the example you want to work with and run `pnpm dev` to start it locally. The Catalyst dashboard should be available under the `/catalyst` route.
+
+#### Working on the Dashboard UI
+
+We're using the UnoCSS CLI for building the dashboard styles. This means that CSS classes you apply may not be visible if the class wasn't already built by the CLI, so if you're making changes to the dashboard styles you need to keep the CLI watch process active by running `pnpm dev` from the `packages/catalyst` folder.
