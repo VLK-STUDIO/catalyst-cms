@@ -23,7 +23,7 @@ export default async function Home() {
           A demo blog made with Catalyst CMS
         </h3>
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-12">
         {articles.map((article) => (
           <Link
             href={`/${article._id}`}

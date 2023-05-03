@@ -8,13 +8,14 @@ type Props = {
   onBlur: (e: React.FocusEvent<HTMLSelectElement>) => void;
   options: {
     label: string;
-    value: string;
+    value: any;
   }[];
   name: string;
+  value: any;
 };
 
 export const SelectInput = forwardRef<HTMLSelectElement, Props>(
-  function SelectInput({ label, onChange, onBlur, options, name }, ref) {
+  function SelectInput({ label, onChange, onBlur, options, name, value }, ref) {
     return (
       <div className="flex flex-col gap-1">
         <label htmlFor="" className="font-semibold text-gray-600">
@@ -25,6 +26,7 @@ export const SelectInput = forwardRef<HTMLSelectElement, Props>(
           onChange={onChange}
           onBlur={onBlur}
           ref={ref}
+          value={value}
           className="p-2 rounded border border-gray-300"
         >
           {options.map((option) => (

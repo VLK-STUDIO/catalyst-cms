@@ -1,6 +1,6 @@
 "use client";
 
-import { UseFormReturn } from "react-hook-form";
+import { Controller, UseFormReturn } from "react-hook-form";
 import { TextInput } from "./TextInput";
 import { RichTextInput } from "./RichTextInput";
 import { FormField } from "./types";
@@ -12,7 +12,7 @@ type Props = {
 };
 
 export const FormElements: React.FC<Props> = ({ form, fields }) => {
-  const { register, getValues, setValue } = form;
+  const { register, getValues, setValue, control } = form;
 
   return (
     <>
@@ -36,11 +36,20 @@ export const FormElements: React.FC<Props> = ({ form, fields }) => {
           );
         } else if (field.type === "select") {
           return (
-            <SelectInput
+            <Controller
+              control={control}
+              name={field.name}
               key={field.name}
-              label={field.label}
-              options={field.options}
-              {...register(field.name)}
+              render={({ field: f }) => (
+                <SelectInput
+                  label={field.label}
+                  options={field.options}
+                  onChange={f.onChange}
+                  onBlur={f.onBlur}
+                  value={f.value}
+                  name={field.name}
+                />
+              )}
             />
           );
         }

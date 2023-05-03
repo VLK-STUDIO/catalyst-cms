@@ -35,6 +35,8 @@ export const Form: React.FC<Props> = ({
   i18n,
   typeName,
 }) => {
+  console.log(fields);
+
   const params = useSearchParams();
 
   const locale = useMemo(
@@ -51,9 +53,6 @@ export const Form: React.FC<Props> = ({
 
   const onSubmit = form.handleSubmit(async (data) => {
     const depopulatedData = getObjectWithDepopulatedReferences(data);
-
-    console.log("ORIGINAL DATA:", data);
-    console.log("DEPOPULATED DATA:", depopulatedData);
 
     const res = await fetch(`${endpoint}${locale ? `?locale=${locale}` : ""}`, {
       method,
