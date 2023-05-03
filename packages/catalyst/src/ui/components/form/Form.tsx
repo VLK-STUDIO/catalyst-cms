@@ -35,8 +35,6 @@ export const Form: React.FC<Props> = ({
   i18n,
   typeName,
 }) => {
-  console.log(fields);
-
   const params = useSearchParams();
 
   const locale = useMemo(
