@@ -33,4 +33,4 @@ jobs:
       - name: Build blog example
         run: pnpm build:blog-example
         env:
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          MONGODB_URI: '${{ secrets.MONGODB_URI }}'
