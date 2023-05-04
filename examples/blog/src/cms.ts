@@ -52,10 +52,10 @@ export const cms = createCatalyst({
         slug: {
           type: "derived",
           label: "Slug",
-          getter: (doc) => slugify(doc.title, { strict: true, lower: true }),
-        },
-      },
-    },
+          getter: doc => slugify(doc.title, { strict: true, lower: true })
+        }
+      }
+    }
   },
   globals: {
     seo: {
