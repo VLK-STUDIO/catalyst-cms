@@ -5,7 +5,8 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "prettify": "prettier --write \"**/*.ts\""
+    "prettify": "prettier --write \"**/*.ts\"",
+    "build:blog-example": "turbo run build --filter=blog-example"
   },
   "devDependencies": {
     "prettier": "^2.8.8",
