@@ -65,12 +65,20 @@ export type CatalystField<C extends CatalystConfig> = CatalystFieldBase &
     | CatalystRichTextField
     | CatalystReferenceField<C>
     | CatalystSelectField
+    | CatalystDerivedField
   );
+
+export type CatalystDerivedField = CatalystFieldBase & {
+  type: "derived";
+  readonly getter: (
+    param: Record<string, any>
+  ) => Promise<string | number> | string | number;
+};
 
 export type CatalystSelectField = CatalystFieldBase & {
   type: "select";
   localized?: boolean;
-  options: { label: string; value: string }[];
+  options: readonly { label: string; value: string }[];
 };
 
 export type CatalystTextField = CatalystFieldBase & {

@@ -8,36 +8,38 @@ export function getFormFieldsFromDataType(
   data: Record<string, any> = {}
 ): Promise<FormField[]> {
   return Promise.all(
-    Object.entries(dataType.fields).map(async ([key, field]) => {
-      const { type, label } = field;
+    Object.entries(dataType.fields)
+      .filter(([_, field]) => field.type !== "derived")
+      .map(async ([key, field]) => {
+        const { type, label } = field;
 
-      switch (type) {
-        case "text":
-          return {
-            type,
-            name: key,
-            label,
-            value: data[key] || ""
-          };
-        case "richtext":
-          return {
-            type,
-            name: key,
-            label,
-            value: data[key] || ""
-          };
-        case "select":
-          return {
-            type,
-            name: key,
-            label,
-            value: data[key] || field.options[0].value,
-            options: field.options
-          };
-        case "reference":
-          const { collection: refCollection } = field;
+        switch (type) {
+          case "text":
+            return {
+              type,
+              name: key,
+              label,
+              value: data[key] || "",
+            };
+          case "richtext":
+            return {
+              type,
+              name: key,
+              label,
+              value: data[key] || "",
+            };
+          case "select":
+            return {
+              type,
+              name: key,
+              label,
+              value: data[key] || field.options[0].value,
+              options: field.options,
+            };
+          case "reference":
+            const { collection: refCollection } = field;
 
-          const exposedColumn = field.exposedColumn || "_id";
+            const exposedColumn = field.exposedColumn || "_id";
 
           const client = await mongoClientPromise;
 

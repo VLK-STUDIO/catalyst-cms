@@ -5,6 +5,7 @@ import { deserializeMongoPayload, makePayloadLocalized } from "../utils";
 import { canUserUpdateDataType } from "../access";
 import { flatten } from "flat";
 import { ObjectId } from "mongodb";
+import { getPayloadWithDerivedFields } from "./utils";
 
 export function isCollectionEntryUpdateEndpoint(req: NextApiRequest) {
   const [typeKind] = req.query.catalyst as string[];
@@ -48,6 +49,11 @@ export async function handleCollectionEntryUpdate(
     json = await collection.hooks.beforeUpdate(json);
   }
 
+  const payloadWithDerivedFields = await getPayloadWithDerivedFields(
+    collection.fields,
+    json
+  );
+
   if (req.query.locale && typeof req.query.locale !== "string") {
     return res.status(400).json({ message: "Invalid locale" });
   }
@@ -55,7 +61,7 @@ export async function handleCollectionEntryUpdate(
   const locale = req.query.locale || config.i18n.defaultLocale;
 
   const localizedPayload = makePayloadLocalized(
-    json,
+    payloadWithDerivedFields,
     locale,
     collection.fields
   );

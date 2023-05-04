@@ -3,10 +3,10 @@ export type FormField = TextFormField | RichTextFormField | SelectFormField;
 export type SelectFormField = FormFieldBase & {
   type: "select";
   value: string;
-  options: Array<{
+  options: readonly {
     label: string;
     value: any;
-  }>;
+  }[];
 };
 
 export type RichTextFormField = FormFieldBase & {

@@ -1,4 +1,5 @@
 import { createCatalyst } from "catalyst-cms";
+import slugify from "slugify";
 
 export const cms = createCatalyst({
   collections: {
@@ -47,9 +48,14 @@ export const cms = createCatalyst({
           label: "Author",
           collection: "users",
           exposedColumn: "fullName"
-        }
-      }
-    }
+        },
+        slug: {
+          type: "derived",
+          label: "Slug",
+          getter: (doc) => slugify(doc.title, { strict: true, lower: true }),
+        },
+      },
+    },
   },
   globals: {
     seo: {

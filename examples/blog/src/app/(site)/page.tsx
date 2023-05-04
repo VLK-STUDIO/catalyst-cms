@@ -12,7 +12,7 @@ export async function generateMetadata() {
 
 export default async function Home() {
   const articles = await cms.data.articles.find({
-    include: ["title", "description", "author"],
+    include: ["title", "description", "author", "slug"],
   });
 
   return (
@@ -26,7 +26,7 @@ export default async function Home() {
       <div className="flex flex-col gap-12">
         {articles.map((article) => (
           <Link
-            href={`/${article._id}`}
+            href={`/${article.slug}`}
             key={article.title}
             className="flex flex-col gap-2"
           >
