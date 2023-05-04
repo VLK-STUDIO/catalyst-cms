@@ -7,7 +7,7 @@ export const cms = createCatalyst({
       fields: {
         fullName: {
           type: "text",
-          label: "Full name",
+          label: "Full name"
         },
         role: {
           type: "select",
@@ -15,15 +15,15 @@ export const cms = createCatalyst({
           options: [
             {
               label: "Admin",
-              value: "admin",
+              value: "admin"
             },
             {
               label: "Editor",
-              value: "editor",
-            },
-          ],
-        },
-      },
+              value: "editor"
+            }
+          ]
+        }
+      }
     },
     articles: {
       previewUrl: "http://localhost:3000/:_id",
@@ -31,25 +31,25 @@ export const cms = createCatalyst({
       fields: {
         title: {
           type: "text",
-          label: "Title",
+          label: "Title"
         },
         description: {
           type: "text",
-          label: "Description",
+          label: "Description"
         },
         content: {
           type: "richtext",
           label: "Content",
-          localized: true,
+          localized: true
         },
         author: {
           type: "reference",
           label: "Author",
           collection: "users",
-          exposedColumn: "fullName",
-        },
-      },
-    },
+          exposedColumn: "fullName"
+        }
+      }
+    }
   },
   globals: {
     seo: {
@@ -57,17 +57,17 @@ export const cms = createCatalyst({
       fields: {
         title: {
           type: "text",
-          label: "Title",
+          label: "Title"
         },
         description: {
           type: "text",
-          label: "Description",
-        },
-      },
-    },
+          label: "Description"
+        }
+      }
+    }
   },
   i18n: {
     locales: ["en", "de"],
-    defaultLocale: "en",
-  },
+    defaultLocale: "en"
+  }
 });

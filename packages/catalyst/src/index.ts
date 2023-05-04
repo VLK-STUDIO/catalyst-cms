@@ -20,7 +20,7 @@ export function createCatalyst<const C extends CatalystConfig>(userConfig: C) {
     rootEndpoint,
     rootPage,
     data,
-    auth,
+    auth
   };
 }
 
@@ -33,13 +33,13 @@ function getConfigWithDefaults<C extends CatalystConfig>(config: C) {
           fields: {
             email: {
               type: "text",
-              label: "Email",
-            },
-          },
-        },
-      },
+              label: "Email"
+            }
+          }
+        }
+      }
     },
-    config,
+    config
   ) as unknown as C & {
     collections: {
       users: C["collections"]["users"] & {

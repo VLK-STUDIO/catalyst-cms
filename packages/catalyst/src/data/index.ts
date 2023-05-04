@@ -10,7 +10,7 @@ import {
   CatalystFindOneDataFunction,
   CatalystGetDataFunction,
   CatalystGlobalsDataObject,
-  QueryOptions,
+  QueryOptions
 } from "./types";
 import { getLivePreviewDataForCollection } from "../preview";
 
@@ -24,8 +24,8 @@ export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
         findAsUser: createFindAsUserFunction(key, config),
         findOneAsUser: createFindOneAsUserFunction(key, config),
         find: createFindFunction(key, config),
-        findOne: createFindOneFunction(key, config),
-      },
+        findOne: createFindOneFunction(key, config)
+      }
     };
   }, {} as CatalystCollectionDataObject<C>);
 
@@ -34,20 +34,20 @@ export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
       ...acc,
       [key]: {
         getAsUser: createGetAsUserFunction(key, config),
-        get: createGetFunction(key, config),
-      },
+        get: createGetFunction(key, config)
+      }
     };
   }, {} as CatalystGlobalsDataObject<C>);
 
   return {
     ...collectionsDataObject,
-    ...globalsDataObject,
+    ...globalsDataObject
   } as CatalystDataObject<C>;
 }
 
 function createFindAsUserFunction(
   collectionKey: string,
-  config: CatalystConfig,
+  config: CatalystConfig
 ) {
   const collection = config.collections[collectionKey];
 
@@ -71,7 +71,7 @@ function createFindAsUserFunction(
 
 function createFindOneAsUserFunction(
   collectionKey: string,
-  config: CatalystConfig,
+  config: CatalystConfig
 ) {
   const collection = config.collections[collectionKey];
 
@@ -116,10 +116,10 @@ function createFindFunction(collectionKey: string, config: CatalystConfig) {
           doc,
           collection.fields,
           options.locale || config.i18n.defaultLocale,
-          config.i18n.defaultLocale,
+          config.i18n.defaultLocale
         ),
-        collection.fields,
-      ),
+        collection.fields
+      )
     );
   };
 
@@ -128,7 +128,7 @@ function createFindFunction(collectionKey: string, config: CatalystConfig) {
 
 function createFindOneFunction<C extends CatalystConfig>(
   collectionKey: string,
-  config: C,
+  config: C
 ) {
   const collection = config.collections[collectionKey];
 
@@ -158,10 +158,10 @@ function createFindOneFunction<C extends CatalystConfig>(
           doc,
           collection.fields,
           options.locale || config.i18n.defaultLocale,
-          config.i18n.defaultLocale,
+          config.i18n.defaultLocale
         ),
-        collection.fields,
-      ),
+        collection.fields
+      )
     )[0];
   };
 
@@ -172,7 +172,7 @@ function createGetAsUserFunction(globalKey: string, config: CatalystConfig) {
   const global = config.globals[globalKey];
 
   const func: CatalystGetDataFunction<typeof config, typeof globalKey> = async (
-    options = {},
+    options = {}
   ) => {
     const session = await getCatalystServerSession();
 
@@ -192,14 +192,14 @@ function createGetFunction(globalKey: string, config: CatalystConfig) {
   const global = config.globals[globalKey];
 
   const func: CatalystGetDataFunction<typeof config, typeof globalKey> = async (
-    options = {},
+    options = {}
   ) => {
     const pipeline = createPipeline(
       {
         ...options,
-        limit: 1,
+        limit: 1
       },
-      global,
+      global
     );
 
     const client = await mongoClientPromise;
@@ -216,10 +216,10 @@ function createGetFunction(globalKey: string, config: CatalystConfig) {
           doc,
           global.fields,
           options.locale || config.i18n.defaultLocale,
-          config.i18n.defaultLocale,
+          config.i18n.defaultLocale
         ),
-        global.fields,
-      ),
+        global.fields
+      )
     )[0];
   };
 
@@ -228,13 +228,13 @@ function createGetFunction(globalKey: string, config: CatalystConfig) {
 
 function createPipeline(
   options: QueryOptions<any>,
-  dataType: CatalystDataType<any>,
+  dataType: CatalystDataType<any>
 ) {
   const pipeline: Array<any> = [];
 
   if (options.filters) {
     pipeline.push({
-      $match: options.filters,
+      $match: options.filters
     });
   }
 
@@ -264,8 +264,8 @@ function createPipeline(
         from: refCollection,
         localField: column,
         foreignField: "_id",
-        as: column,
-      },
+        as: column
+      }
     });
   }
 
@@ -274,10 +274,10 @@ function createPipeline(
       $project: options.include.reduce(
         (acc, key) => ({
           ...acc,
-          [key]: 1,
+          [key]: 1
         }),
-        {},
-      ),
+        {}
+      )
     });
   }
 
@@ -285,14 +285,14 @@ function createPipeline(
     pipeline.push({
       $unwind: {
         path: `$${column}`,
-        preserveNullAndEmptyArrays: true,
-      },
+        preserveNullAndEmptyArrays: true
+      }
     });
   }
 
   if (options.limit) {
     pipeline.push({
-      $limit: options.limit,
+      $limit: options.limit
     });
   }
 

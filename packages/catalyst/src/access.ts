@@ -3,26 +3,26 @@ import { CatalystCollection, CatalystConfig, CatalystDataType } from "./types";
 
 export function getCollectionsUserCanRead(
   config: CatalystConfig,
-  user: Session,
+  user: Session
 ) {
   return Object.fromEntries(
     Object.entries(config.collections).filter(([, collection]) =>
-      canUserReadDataType(user, collection),
-    ),
+      canUserReadDataType(user, collection)
+    )
   );
 }
 
 export function getGlobalsUserCanRead(config: CatalystConfig, user: Session) {
   return Object.fromEntries(
     Object.entries(config.globals).filter(([, global]) =>
-      canUserReadDataType(user, global),
-    ),
+      canUserReadDataType(user, global)
+    )
   );
 }
 
 export function canUserReadDataType(
   user: Session | null,
-  dataType: CatalystDataType<any>,
+  dataType: CatalystDataType<any>
 ) {
   if (!dataType.access) return true;
 
@@ -33,7 +33,7 @@ export function canUserReadDataType(
 
 export function canUserUpdateDataType(
   user: Session | null,
-  dataType: CatalystDataType<any>,
+  dataType: CatalystDataType<any>
 ) {
   if (!dataType.access) return true;
 
@@ -44,7 +44,7 @@ export function canUserUpdateDataType(
 
 export function canUserCreateCollectionEntry(
   user: Session | null,
-  collection: CatalystCollection<any>,
+  collection: CatalystCollection<any>
 ) {
   if (!collection.access) return true;
 
@@ -55,7 +55,7 @@ export function canUserCreateCollectionEntry(
 
 export function canUserDeleteCollectionEntry(
   user: Session | null,
-  collection: CatalystCollection<any>,
+  collection: CatalystCollection<any>
 ) {
   if (!collection.access) return true;
 

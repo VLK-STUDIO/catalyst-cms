@@ -15,7 +15,7 @@ export function isGlobalUpsertEndpoint(req: NextApiRequest) {
 export async function handleGlobalUpsert(
   config: CatalystConfig,
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse
 ) {
   const [_, globalKey] = req.query.catalyst as string[];
 
@@ -28,7 +28,7 @@ export async function handleGlobalUpsert(
 
   if (!canUserUpdateDataType(session, global)) {
     return res.status(403).json({
-      error: "Unauthorized",
+      error: "Unauthorized"
     });
   }
 
@@ -37,7 +37,7 @@ export async function handleGlobalUpsert(
     json = JSON.parse(req.body);
   } catch {
     return res.status(400).json({
-      error: "Invalid JSON",
+      error: "Invalid JSON"
     });
   }
 
@@ -61,7 +61,7 @@ export async function handleGlobalUpsert(
 
   const deserializedPayload = deserializeMongoPayload(
     localizedPayload,
-    global.fields,
+    global.fields
   );
 
   // Flatten localized data for atomic updates in mongo
@@ -73,19 +73,19 @@ export async function handleGlobalUpsert(
     await client.db().collection(globalKey).updateOne(
       {},
       {
-        $set: flattenedPayload,
+        $set: flattenedPayload
       },
       {
-        upsert: true,
-      },
+        upsert: true
+      }
     );
   } catch (err) {
     return res.status(500).json({
-      error: "Failed to update document: " + (err as Error).message,
+      error: "Failed to update document: " + (err as Error).message
     });
   }
 
   return res.status(200).json({
-    success: true,
+    success: true
   });
 }

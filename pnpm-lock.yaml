@@ -6,9 +6,8 @@ importers:
     specifiers:
       prettier: ^2.8.8
       turbo: latest
-    dependencies:
-      prettier: 2.8.8
     devDependencies:
+      prettier: 2.8.8
       turbo: 1.9.3
 
   examples/blog:
@@ -3320,7 +3319,7 @@ packages:
     resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
     engines: {node: '>=10.13.0'}
     hasBin: true
-    dev: false
+    dev: true
 
   /pretty-format/3.8.0:
     resolution: {integrity: sha512-WuxUnVtlWL1OfZFQFuqvnvs6MiAGk9UNsBostyBOB0Is9wb5uRESevA6rnl/rkksXaGX3GzZhPup5d6Vp1nFew==}

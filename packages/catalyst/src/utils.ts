@@ -15,7 +15,7 @@ import { CatalystFields } from "./types";
 export const makePayloadLocalized = (
   payload: any,
   locale: string,
-  collectionFields: CatalystFields<any>,
+  collectionFields: CatalystFields<any>
 ) => {
   return Object.fromEntries(
     Object.entries(payload).map(([key, value]) => {
@@ -24,7 +24,7 @@ export const makePayloadLocalized = (
       }
 
       return [key, value];
-    }),
+    })
   );
 };
 
@@ -45,7 +45,7 @@ export const delocalizePayload = (
   payload: any,
   collectionFields: CatalystFields<any>,
   locale: string,
-  fallbackLocale: string,
+  fallbackLocale: string
 ) => {
   return Object.fromEntries(
     Object.entries(payload).map(([key, value]) => {
@@ -58,7 +58,7 @@ export const delocalizePayload = (
       if ("localized" in collectionFields[key]) {
         if (typeof value !== "object") {
           logWarning(
-            `Expected an object for localized field '${key}', but got '${typeof value}'. This is not an error, but it means your localized column contains stale data. You should perform a migration on this field to fix this.`,
+            `Expected an object for localized field '${key}', but got '${typeof value}'. This is not an error, but it means your localized column contains stale data. You should perform a migration on this field to fix this.`
           );
           return [key, value];
         }
@@ -71,7 +71,7 @@ export const delocalizePayload = (
       }
 
       return [key, value];
-    }),
+    })
   );
 };
 
@@ -85,7 +85,7 @@ export const delocalizePayload = (
  */
 export const makeMongoPayloadSerializable = (
   payload: any,
-  dataTypeFields: CatalystFields<any>,
+  dataTypeFields: CatalystFields<any>
 ) => {
   return Object.fromEntries(
     Object.entries(payload).map(([key, value]) => {
@@ -98,7 +98,7 @@ export const makeMongoPayloadSerializable = (
       }
 
       return [key, value];
-    }),
+    })
   ) as any;
 };
 
@@ -112,7 +112,7 @@ export const makeMongoPayloadSerializable = (
  */
 export const deserializeMongoPayload = (
   payload: any,
-  dataTypeFields: CatalystFields<any>,
+  dataTypeFields: CatalystFields<any>
 ) => {
   return Object.fromEntries(
     Object.entries(payload).map(([key, value]) => {
@@ -121,14 +121,14 @@ export const deserializeMongoPayload = (
       if (field && field.type === "reference") {
         if (typeof value !== "string")
           throw new Error(
-            `Expected a string for reference field '${key}', but got '${typeof value}'.`,
+            `Expected a string for reference field '${key}', but got '${typeof value}'.`
           );
 
         return [key, new ObjectId(value)];
       }
 
       return [key, value];
-    }),
+    })
   );
 };
 
@@ -157,7 +157,7 @@ export function convertObjectIdsToString(payload: any) {
 function deepIterateOnKey(
   obj: Object,
   key: string,
-  callback: (val: any) => any,
+  callback: (val: any) => any
 ): any {
   const newObj: any = {};
 

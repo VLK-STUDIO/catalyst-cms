@@ -9,8 +9,8 @@ const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!
+    })
   ],
   callbacks: {
     signIn: async ({ user }) => {
@@ -33,8 +33,8 @@ const authOptions: AuthOptions = {
       }
 
       return true;
-    },
-  },
+    }
+  }
 };
 
 export function handleAuthRequest(req: NextApiRequest, res: NextApiResponse) {
@@ -51,7 +51,7 @@ export function createCatalystAuthObject() {
   return {
     getSession: () => getServerSession(authOptions),
     getSessionFromRequest: (req: NextApiRequest, res: NextApiResponse) =>
-      getServerSession(req, res, authOptions),
+      getServerSession(req, res, authOptions)
   };
 }
 

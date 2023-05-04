@@ -5,13 +5,11 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "prettify": "pnpm prettify:js && pnpm prettify:ts"
+    "prettify": "prettier --write \"**/*.ts\""
   },
   "devDependencies": {
+    "prettier": "^2.8.8",
     "turbo": "latest"
   },
-  "packageManager": "pnpm@7.15.0",
-  "dependencies": {
-    "prettier": "^2.8.8"
-  }
+  "packageManager": "pnpm@7.15.0"
 }

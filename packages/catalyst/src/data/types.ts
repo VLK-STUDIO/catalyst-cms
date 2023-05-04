@@ -3,7 +3,7 @@ import {
   CatalystConfig,
   CatalystReferenceField,
   CatalystRichTextField,
-  CatalystTextField,
+  CatalystTextField
 } from "../types";
 
 export type CatalystDataObject<C extends CatalystConfig> =
@@ -27,18 +27,18 @@ export type CatalystGlobalsDataObject<C extends CatalystConfig> = {
 
 export type CatalystFindDataFunction<
   C extends CatalystConfig,
-  K extends keyof C["collections"],
+  K extends keyof C["collections"]
 > = (
   options?: QueryOptions<
     ComputedCatalystFields<C, C["collections"][K]["fields"]>
-  >,
+  >
 ) => Promise<
   (ComputedCatalystFields<C, C["collections"][K]["fields"]> & { _id: string })[]
 >;
 
 export type CatalystFindOneDataFunction<
   C extends CatalystConfig,
-  K extends keyof C["collections"],
+  K extends keyof C["collections"]
 > = (
   options: Omit<
     WithRequired<
@@ -46,24 +46,24 @@ export type CatalystFindOneDataFunction<
       "filters"
     >,
     "limit"
-  >,
+  >
 ) => Promise<
   ComputedCatalystFields<C, C["collections"][K]["fields"]> & { _id: string }
 >;
 
 export type CatalystGetDataFunction<
   C extends CatalystConfig,
-  K extends keyof C["globals"],
+  K extends keyof C["globals"]
 > = (
   options?: Omit<
     QueryOptions<ComputedCatalystFields<C, C["globals"][K]["fields"]>>,
     "limit"
-  >,
+  >
 ) => Promise<ComputedCatalystFields<C, C["globals"][K]["fields"]>>;
 
 type ComputedCatalystFields<
   C extends CatalystConfig,
-  F extends C["collections"][string]["fields"] | C["globals"][string]["fields"],
+  F extends C["collections"][string]["fields"] | C["globals"][string]["fields"]
 > = {
   [K in keyof F]: F[K] extends CatalystReferenceField<C>
     ? ComputedCatalystFields<C, C["collections"][F[K]["collection"]]["fields"]>
