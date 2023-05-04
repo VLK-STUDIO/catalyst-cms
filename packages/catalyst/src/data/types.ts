@@ -3,7 +3,7 @@ import {
   CatalystConfig,
   CatalystReferenceField,
   CatalystRichTextField,
-  CatalystTextField,
+  CatalystTextField
 } from "../types";
 
 export type CatalystDataObject<C extends CatalystConfig> =

@@ -1,4 +1,4 @@
-import { createCatalystAuthObject } from './auth';
+import { createCatalystAuthObject } from "./auth";
 
 export type CatalystConfig = {
   collections: {
@@ -45,16 +45,13 @@ export type CatalystGlobal<C extends CatalystConfig> =
     };
   };
 
-export type CatalystBaseDataType<C extends CatalystConfig> =
-  {
-    label: string;
-    previewUrl?: string;
-    fields: CatalystFields<C>;
-  };
+export type CatalystBaseDataType<C extends CatalystConfig> = {
+  label: string;
+  previewUrl?: string;
+  fields: CatalystFields<C>;
+};
 
-export type CatalystAuth = ReturnType<
-  typeof createCatalystAuthObject
->;
+export type CatalystAuth = ReturnType<typeof createCatalystAuthObject>;
 
 type CatalystAccessControlFunction = (user: any) => boolean;
 
@@ -62,40 +59,38 @@ export type CatalystFields<C extends CatalystConfig> = {
   [K: string]: CatalystField<C>;
 };
 
-export type CatalystField<C extends CatalystConfig> =
-  CatalystFieldBase &
-    (
-      | CatalystTextField
-      | CatalystRichTextField
-      | CatalystReferenceField<C>
-      | CatalystSelectField
-    );
+export type CatalystField<C extends CatalystConfig> = CatalystFieldBase &
+  (
+    | CatalystTextField
+    | CatalystRichTextField
+    | CatalystReferenceField<C>
+    | CatalystSelectField
+  );
 
 export type CatalystSelectField = CatalystFieldBase & {
-  type: 'select';
+  type: "select";
   localized?: boolean;
   options: { label: string; value: string }[];
 };
 
 export type CatalystTextField = CatalystFieldBase & {
-  type: 'text';
+  type: "text";
   localized?: boolean;
   hooks?: FieldHooks<string>;
 };
 
 export type CatalystRichTextField = CatalystFieldBase & {
-  type: 'richtext';
+  type: "richtext";
   localized?: boolean;
   hooks?: FieldHooks<string>;
 };
 
-export type CatalystReferenceField<
-  C extends CatalystConfig
-> = CatalystFieldBase & {
-  type: 'reference';
-  collection: keyof C['collections'];
-  exposedColumn?: string;
-};
+export type CatalystReferenceField<C extends CatalystConfig> =
+  CatalystFieldBase & {
+    type: "reference";
+    collection: keyof C["collections"];
+    exposedColumn?: string;
+  };
 
 type CatalystFieldBase = {
   label: string;

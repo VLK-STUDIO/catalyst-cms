@@ -3,12 +3,12 @@ import { handleAuthRequest, isAuthRequest } from "../auth";
 import { CatalystAuth, CatalystConfig } from "../types";
 import {
   isCollectionEntryCreationEndpoint,
-  handleCollectionEntryCreation,
+  handleCollectionEntryCreation
 } from "./collectionEntryCreation";
 import { isGlobalUpsertEndpoint, handleGlobalUpsert } from "./globalUpsert";
 import {
   isCollectionEntryUpdateEndpoint,
-  handleCollectionEntryUpdate,
+  handleCollectionEntryUpdate
 } from "./collectionEntryUpdate";
 
 export function createRootEndpoint<C extends CatalystConfig>(
@@ -33,7 +33,7 @@ export function createRootEndpoint<C extends CatalystConfig>(
       return await handleGlobalUpsert(config, req, res);
     else {
       return res.status(404).json({
-        message: "Route not found",
+        message: "Route not found"
       });
     }
   };

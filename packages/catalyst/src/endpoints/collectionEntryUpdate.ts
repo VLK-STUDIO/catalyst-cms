@@ -29,7 +29,7 @@ export async function handleCollectionEntryUpdate(
 
   if (!canUserUpdateDataType(session, collection)) {
     return res.status(403).json({
-      error: "Unauthorized",
+      error: "Unauthorized"
     });
   }
 
@@ -38,7 +38,7 @@ export async function handleCollectionEntryUpdate(
     json = JSON.parse(req.body);
   } catch {
     return res.status(400).json({
-      error: "Invalid JSON",
+      error: "Invalid JSON"
     });
   }
 
@@ -77,20 +77,20 @@ export async function handleCollectionEntryUpdate(
       .updateOne(
         {
           _id: {
-            $eq: new ObjectId(docId),
-          },
+            $eq: new ObjectId(docId)
+          }
         },
         {
-          $set: flattenedPayload,
+          $set: flattenedPayload
         }
       );
   } catch (err) {
     return res.status(500).json({
-      error: "Failed to update document: " + (err as Error).message,
+      error: "Failed to update document: " + (err as Error).message
     });
   }
 
   return res.status(200).json({
-    success: true,
+    success: true
   });
 }

@@ -10,7 +10,7 @@ import {
   CatalystFindOneDataFunction,
   CatalystGetDataFunction,
   CatalystGlobalsDataObject,
-  QueryOptions,
+  QueryOptions
 } from "./types";
 import { getLivePreviewDataForCollection } from "../preview";
 
@@ -24,8 +24,8 @@ export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
         findAsUser: createFindAsUserFunction(key, config),
         findOneAsUser: createFindOneAsUserFunction(key, config),
         find: createFindFunction(key, config),
-        findOne: createFindOneFunction(key, config),
-      },
+        findOne: createFindOneFunction(key, config)
+      }
     };
   }, {} as CatalystCollectionDataObject<C>);
 
@@ -34,14 +34,14 @@ export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
       ...acc,
       [key]: {
         getAsUser: createGetAsUserFunction(key, config),
-        get: createGetFunction(key, config),
-      },
+        get: createGetFunction(key, config)
+      }
     };
   }, {} as CatalystGlobalsDataObject<C>);
 
   return {
     ...collectionsDataObject,
-    ...globalsDataObject,
+    ...globalsDataObject
   } as CatalystDataObject<C>;
 }
 
@@ -54,7 +54,7 @@ function createFindAsUserFunction(
   const func: CatalystFindDataFunction<
     typeof config,
     typeof collectionKey
-  > = async (options) => {
+  > = async options => {
     const session = await getCatalystServerSession();
 
     if (!canUserReadDataType(session, collection)) {
@@ -78,7 +78,7 @@ function createFindOneAsUserFunction(
   const func: CatalystFindOneDataFunction<
     typeof config,
     typeof collectionKey
-  > = async (options) => {
+  > = async options => {
     const session = await getCatalystServerSession();
 
     if (!canUserReadDataType(session, collection)) {
@@ -110,7 +110,7 @@ function createFindFunction(collectionKey: string, config: CatalystConfig) {
       .aggregate(pipeline)
       .toArray();
 
-    return docs.map((doc) =>
+    return docs.map(doc =>
       makeMongoPayloadSerializable(
         delocalizePayload(
           doc,
@@ -135,7 +135,7 @@ function createFindOneFunction<C extends CatalystConfig>(
   const func: CatalystFindOneDataFunction<
     typeof config,
     typeof collectionKey
-  > = async (options) => {
+  > = async options => {
     const livePreviewData = getLivePreviewDataForCollection(collectionKey);
 
     if (livePreviewData) {
@@ -152,7 +152,7 @@ function createFindOneFunction<C extends CatalystConfig>(
       .aggregate(pipeline)
       .toArray();
 
-    return docs.map((doc) =>
+    return docs.map(doc =>
       makeMongoPayloadSerializable(
         delocalizePayload(
           doc,
@@ -197,7 +197,7 @@ function createGetFunction(globalKey: string, config: CatalystConfig) {
     const pipeline = createPipeline(
       {
         ...options,
-        limit: 1,
+        limit: 1
       },
       global
     );
@@ -210,7 +210,7 @@ function createGetFunction(globalKey: string, config: CatalystConfig) {
       .aggregate(pipeline)
       .toArray();
 
-    return docs.map((doc) =>
+    return docs.map(doc =>
       makeMongoPayloadSerializable(
         delocalizePayload(
           doc,
@@ -234,7 +234,7 @@ function createPipeline(
 
   if (options.filters) {
     pipeline.push({
-      $match: options.filters,
+      $match: options.filters
     });
   }
 
@@ -264,8 +264,8 @@ function createPipeline(
         from: refCollection,
         localField: column,
         foreignField: "_id",
-        as: column,
-      },
+        as: column
+      }
     });
   }
 
@@ -274,10 +274,10 @@ function createPipeline(
       $project: options.include.reduce(
         (acc, key) => ({
           ...acc,
-          [key]: 1,
+          [key]: 1
         }),
         {}
-      ),
+      )
     });
   }
 
@@ -285,14 +285,14 @@ function createPipeline(
     pipeline.push({
       $unwind: {
         path: `$${column}`,
-        preserveNullAndEmptyArrays: true,
-      },
+        preserveNullAndEmptyArrays: true
+      }
     });
   }
 
   if (options.limit) {
     pipeline.push({
-      $limit: options.limit,
+      $limit: options.limit
     });
   }
 

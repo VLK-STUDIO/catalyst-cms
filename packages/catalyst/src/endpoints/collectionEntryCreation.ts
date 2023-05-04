@@ -29,7 +29,7 @@ export async function handleCollectionEntryCreation(
 
   if (!canUserCreateCollectionEntry(session, collection)) {
     return res.status(403).json({
-      error: "Unauthorized",
+      error: "Unauthorized"
     });
   }
 
@@ -39,7 +39,7 @@ export async function handleCollectionEntryCreation(
     json = JSON.parse(req.body);
   } catch {
     return res.status(400).json({
-      error: "Invalid JSON",
+      error: "Invalid JSON"
     });
   }
 
@@ -53,7 +53,7 @@ export async function handleCollectionEntryCreation(
   // Make sure request locale is valid
   if (req.query.locale && typeof req.query.locale !== "string") {
     return res.status(400).json({
-      error: "Invalid locale",
+      error: "Invalid locale"
     });
   }
 
@@ -81,11 +81,11 @@ export async function handleCollectionEntryCreation(
       .insertOne(deserializedPayload);
 
     return res.status(201).json({
-      _id: result.insertedId,
+      _id: result.insertedId
     });
   } catch (err) {
     return res.status(500).json({
-      error: "Failed to insert document:" + (err as Error).message,
+      error: "Failed to insert document:" + (err as Error).message
     });
   }
 }
