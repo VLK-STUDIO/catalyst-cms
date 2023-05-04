@@ -3,6 +3,7 @@ import mongoClientPromise from "../mongo";
 import { CatalystAuth, CatalystConfig } from "../types";
 import { deserializeMongoPayload, makePayloadLocalized } from "../utils";
 import { canUserCreateCollectionEntry } from "../access";
+import { getPayloadWithDerivedFields } from "./utils";
 
 export function isCollectionEntryCreationEndpoint(req: NextApiRequest) {
   const [typeKind] = req.query.catalyst as string[];
@@ -50,6 +51,11 @@ export async function handleCollectionEntryCreation(
     json = await collection.hooks.beforeCreate(json);
   }
 
+  const payloadWithDerivedFields = await getPayloadWithDerivedFields(
+    collection.fields,
+    json
+  );
+
   // Make sure request locale is valid
   if (req.query.locale && typeof req.query.locale !== "string") {
     return res.status(400).json({
@@ -62,7 +68,7 @@ export async function handleCollectionEntryCreation(
 
   // Apply locale to localized fields
   const localizedPayload = makePayloadLocalized(
-    json,
+    payloadWithDerivedFields,
     locale,
     collection.fields
   );

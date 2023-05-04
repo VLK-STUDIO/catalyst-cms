@@ -1,6 +1,8 @@
 import { Filter } from "mongodb";
 import {
   CatalystConfig,
+  CatalystDerivedField,
+  CatalystFields,
   CatalystReferenceField,
   CatalystRichTextField,
   CatalystTextField
@@ -61,15 +63,17 @@ export type CatalystGetDataFunction<
   >
 ) => Promise<ComputedCatalystFields<C, C["globals"][K]["fields"]>>;
 
-type ComputedCatalystFields<
+export type ComputedCatalystFields<
   C extends CatalystConfig,
-  F extends C["collections"][string]["fields"] | C["globals"][string]["fields"]
+  F extends CatalystFields<C>
 > = {
   [K in keyof F]: F[K] extends CatalystReferenceField<C>
     ? ComputedCatalystFields<C, C["collections"][F[K]["collection"]]["fields"]>
     : F[K] extends CatalystTextField
     ? string
-    : F[K]["type"] extends CatalystRichTextField
+    : F[K] extends CatalystRichTextField
+    ? string
+    : F[K] extends CatalystDerivedField
     ? string
     : never;
 };

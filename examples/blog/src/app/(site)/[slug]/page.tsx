@@ -1,18 +1,17 @@
-import { ObjectId } from "mongodb";
 import { cms } from "@/cms";
 import Link from "next/link";
 
 type Props = {
   params: {
-    articleId: string;
+    slug: string;
   };
 };
 
 export default async function ArticlePage({ params }: Props) {
   const article = await cms.data.articles.findOne({
     filters: {
-      _id: {
-        $eq: new ObjectId(params.articleId),
+      slug: {
+        $eq: params.slug,
       },
     },
     include: ["title", "author", "content"],

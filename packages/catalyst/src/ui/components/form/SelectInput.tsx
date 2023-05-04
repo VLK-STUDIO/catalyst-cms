@@ -6,7 +6,7 @@ type Props = {
   label: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onBlur: (e: React.FocusEvent<HTMLSelectElement>) => void;
-  options: {
+  options: readonly {
     label: string;
     value: any;
   }[];
