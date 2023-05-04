@@ -15,7 +15,7 @@ export function isGlobalUpsertEndpoint(req: NextApiRequest) {
 export async function handleGlobalUpsert(
   config: CatalystConfig,
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const [_, globalKey] = req.query.catalyst as string[];
 
@@ -61,7 +61,7 @@ export async function handleGlobalUpsert(
 
   const deserializedPayload = deserializeMongoPayload(
     localizedPayload,
-    global.fields
+    global.fields,
   );
 
   // Flatten localized data for atomic updates in mongo
@@ -77,7 +77,7 @@ export async function handleGlobalUpsert(
       },
       {
         upsert: true,
-      }
+      },
     );
   } catch (err) {
     return res.status(500).json({

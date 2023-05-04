@@ -13,11 +13,11 @@ import {
 
 export function createRootEndpoint<C extends CatalystConfig>(
   config: C,
-  auth: CatalystAuth
+  auth: CatalystAuth,
 ) {
   return async function CatalystRouteHandler(
     req: NextApiRequest,
-    res: NextApiResponse
+    res: NextApiResponse,
   ) {
     // Handle NextAuth routes
     if (isAuthRequest(req)) {

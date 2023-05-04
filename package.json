@@ -4,10 +4,16 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "prettify": "pnpm prettify:js && pnpm prettify:ts",
+    "prettify:js": "prettier --write \"**/*.js\"",
+    "prettify:ts": "prettier --write \"**/*.ts\""
   },
   "devDependencies": {
     "turbo": "latest"
   },
-  "packageManager": "pnpm@7.15.0"
+  "packageManager": "pnpm@7.15.0",
+  "dependencies": {
+    "prettier": "^2.8.8"
+  }
 }

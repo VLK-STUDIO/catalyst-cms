@@ -39,7 +39,7 @@ function getConfigWithDefaults<C extends CatalystConfig>(config: C) {
         },
       },
     },
-    config
+    config,
   ) as unknown as C & {
     collections: {
       users: C["collections"]["users"] & {

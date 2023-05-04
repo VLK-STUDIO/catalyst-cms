@@ -16,7 +16,7 @@ export async function handleCollectionEntryUpdate(
   config: CatalystConfig,
   req: NextApiRequest,
   res: NextApiResponse,
-  auth: CatalystAuth
+  auth: CatalystAuth,
 ) {
   const [_, collectionKey, docId] = req.query.catalyst as string[];
 
@@ -57,11 +57,11 @@ export async function handleCollectionEntryUpdate(
   const localizedPayload = makePayloadLocalized(
     json,
     locale,
-    collection.fields
+    collection.fields,
   );
   const deserializedPayload = deserializeMongoPayload(
     localizedPayload,
-    collection.fields
+    collection.fields,
   );
 
   // Flatten payload into nested string paths with dots
@@ -82,7 +82,7 @@ export async function handleCollectionEntryUpdate(
         },
         {
           $set: flattenedPayload,
-        }
+        },
       );
   } catch (err) {
     return res.status(500).json({

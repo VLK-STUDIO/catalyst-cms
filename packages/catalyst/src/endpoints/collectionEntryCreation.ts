@@ -14,7 +14,7 @@ export async function handleCollectionEntryCreation(
   config: CatalystConfig,
   req: NextApiRequest,
   res: NextApiResponse,
-  auth: CatalystAuth
+  auth: CatalystAuth,
 ) {
   // Get query params
   const [_, collectionKey] = req.query.catalyst as string[];
@@ -64,12 +64,12 @@ export async function handleCollectionEntryCreation(
   const localizedPayload = makePayloadLocalized(
     json,
     locale,
-    collection.fields
+    collection.fields,
   );
 
   const deserializedPayload = deserializeMongoPayload(
     localizedPayload,
-    collection.fields
+    collection.fields,
   );
 
   // Insert document into MongoDB

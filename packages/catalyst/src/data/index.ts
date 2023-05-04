@@ -47,14 +47,14 @@ export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
 
 function createFindAsUserFunction(
   collectionKey: string,
-  config: CatalystConfig
+  config: CatalystConfig,
 ) {
   const collection = config.collections[collectionKey];
 
   const func: CatalystFindDataFunction<
     typeof config,
     typeof collectionKey
-  > = async (options) => {
+  > = async options => {
     const session = await getCatalystServerSession();
 
     if (!canUserReadDataType(session, collection)) {
@@ -71,14 +71,14 @@ function createFindAsUserFunction(
 
 function createFindOneAsUserFunction(
   collectionKey: string,
-  config: CatalystConfig
+  config: CatalystConfig,
 ) {
   const collection = config.collections[collectionKey];
 
   const func: CatalystFindOneDataFunction<
     typeof config,
     typeof collectionKey
-  > = async (options) => {
+  > = async options => {
     const session = await getCatalystServerSession();
 
     if (!canUserReadDataType(session, collection)) {
@@ -110,16 +110,16 @@ function createFindFunction(collectionKey: string, config: CatalystConfig) {
       .aggregate(pipeline)
       .toArray();
 
-    return docs.map((doc) =>
+    return docs.map(doc =>
       makeMongoPayloadSerializable(
         delocalizePayload(
           doc,
           collection.fields,
           options.locale || config.i18n.defaultLocale,
-          config.i18n.defaultLocale
+          config.i18n.defaultLocale,
         ),
-        collection.fields
-      )
+        collection.fields,
+      ),
     );
   };
 
@@ -128,14 +128,14 @@ function createFindFunction(collectionKey: string, config: CatalystConfig) {
 
 function createFindOneFunction<C extends CatalystConfig>(
   collectionKey: string,
-  config: C
+  config: C,
 ) {
   const collection = config.collections[collectionKey];
 
   const func: CatalystFindOneDataFunction<
     typeof config,
     typeof collectionKey
-  > = async (options) => {
+  > = async options => {
     const livePreviewData = getLivePreviewDataForCollection(collectionKey);
 
     if (livePreviewData) {
@@ -152,16 +152,16 @@ function createFindOneFunction<C extends CatalystConfig>(
       .aggregate(pipeline)
       .toArray();
 
-    return docs.map((doc) =>
+    return docs.map(doc =>
       makeMongoPayloadSerializable(
         delocalizePayload(
           doc,
           collection.fields,
           options.locale || config.i18n.defaultLocale,
-          config.i18n.defaultLocale
+          config.i18n.defaultLocale,
         ),
-        collection.fields
-      )
+        collection.fields,
+      ),
     )[0];
   };
 
@@ -172,7 +172,7 @@ function createGetAsUserFunction(globalKey: string, config: CatalystConfig) {
   const global = config.globals[globalKey];
 
   const func: CatalystGetDataFunction<typeof config, typeof globalKey> = async (
-    options = {}
+    options = {},
   ) => {
     const session = await getCatalystServerSession();
 
@@ -192,14 +192,14 @@ function createGetFunction(globalKey: string, config: CatalystConfig) {
   const global = config.globals[globalKey];
 
   const func: CatalystGetDataFunction<typeof config, typeof globalKey> = async (
-    options = {}
+    options = {},
   ) => {
     const pipeline = createPipeline(
       {
         ...options,
         limit: 1,
       },
-      global
+      global,
     );
 
     const client = await mongoClientPromise;
@@ -210,16 +210,16 @@ function createGetFunction(globalKey: string, config: CatalystConfig) {
       .aggregate(pipeline)
       .toArray();
 
-    return docs.map((doc) =>
+    return docs.map(doc =>
       makeMongoPayloadSerializable(
         delocalizePayload(
           doc,
           global.fields,
           options.locale || config.i18n.defaultLocale,
-          config.i18n.defaultLocale
+          config.i18n.defaultLocale,
         ),
-        global.fields
-      )
+        global.fields,
+      ),
     )[0];
   };
 
@@ -228,7 +228,7 @@ function createGetFunction(globalKey: string, config: CatalystConfig) {
 
 function createPipeline(
   options: QueryOptions<any>,
-  dataType: CatalystDataType<any>
+  dataType: CatalystDataType<any>,
 ) {
   const pipeline: Array<any> = [];
 
@@ -276,7 +276,7 @@ function createPipeline(
           ...acc,
           [key]: 1,
         }),
-        {}
+        {},
       ),
     });
   }
