@@ -23,4 +23,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
         shell: bash
-      - run: pnpm build:blog-example
+      - name: Build blog example
+        shell: bash
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: pnpm build:blog-example
