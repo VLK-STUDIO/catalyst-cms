@@ -5,9 +5,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "prettify": "pnpm prettify:js && pnpm prettify:ts",
-    "prettify:js": "prettier --write \"**/*.js\"",
-    "prettify:ts": "prettier --write \"**/*.ts\""
+    "prettify": "pnpm prettify:js && pnpm prettify:ts"
   },
   "devDependencies": {
     "turbo": "latest"
