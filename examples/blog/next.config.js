@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    appDir: true,
+    appDir: true
   },
-  transpilePackages: ["catalyst-cms"],
+  transpilePackages: ["catalyst-cms"]
 };
 
 module.exports = nextConfig;
