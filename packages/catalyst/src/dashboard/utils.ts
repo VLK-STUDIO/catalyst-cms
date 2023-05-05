@@ -1,7 +1,7 @@
-import { CatalystDataType } from "../../types";
-import { FormField } from "../components/form/types";
-import mongoClientPromise from "../../mongo";
-import { convertObjectIdsToString } from "../../utils";
+import { CatalystDataType } from "../types";
+import { FormField } from "./components/form/types";
+import mongoClientPromise from "../mongo";
+import { convertObjectIdsToString } from "../utils";
 
 export function getFormFieldsFromDataType(
   dataType: CatalystDataType<any>,

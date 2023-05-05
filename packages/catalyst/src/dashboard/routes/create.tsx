@@ -1,18 +1,14 @@
-import { Session } from "next-auth";
-import type { CatalystConfig, CatalystCollection } from "../../types";
+import { notFound, redirect } from "next/navigation";
 import { Form } from "../components/form/Form";
-import { getFormFieldsFromDataType } from "./utils";
+import { getFormFieldsFromDataType } from "../utils";
 import { canUserCreateCollectionEntry } from "../../access";
-import { redirect } from "next/navigation";
+import { RouteProps } from "./types";
 
-type Props = {
-  collection: CatalystCollection<any>;
-  name: string;
-  i18n: CatalystConfig["i18n"];
-  session: Session;
-};
+export async function CreateRoute({ config, session, params }: RouteProps) {
+  const [_, collectionName] = params;
 
-export async function CreatePage({ collection, i18n, name, session }: Props) {
+  const collection = config.collections[collectionName] || notFound();
+
   if (!canUserCreateCollectionEntry(session, collection)) {
     redirect("/catalyst/forbidden");
   }
@@ -22,13 +18,13 @@ export async function CreatePage({ collection, i18n, name, session }: Props) {
   return (
     <div className="flex flex-col bg-gray-100 h-full">
       <Form
-        typeName={name}
+        typeName={collectionName}
         fields={fields}
         method="POST"
         endpoint={`/api/collection/${name}`}
         submitText="Create"
         title={`CREATE ${collection.label.toUpperCase()}`}
-        i18n={i18n}
+        i18n={config.i18n}
       />
     </div>
   );

@@ -1,9 +1,9 @@
-import { CatalystConfig } from "./types";
-import { createRootPage } from "./ui/pages/base";
+import deepmerge from "deepmerge";
+import { CatalystCms, CatalystConfig } from "./types";
+import { createDashboard } from "./dashboard";
 import { createCatalystAuthObject } from "./auth";
 import { createCatalystDataObject } from "./data";
 import { createRootEndpoint } from "./endpoints";
-import deepmerge from "deepmerge";
 import { CatalystSeed, seedDocuments } from "./seed";
 
 export function createCatalyst<const C extends CatalystConfig>(
@@ -16,7 +16,7 @@ export function createCatalyst<const C extends CatalystConfig>(
     seedDocuments(seed);
   }
 
-  const config = getConfigWithDefaults(userConfig);
+  const config = getConfigWithDefaults(userConfig) as unknown as C;
 
   const data = createCatalystDataObject(config);
 
@@ -24,7 +24,7 @@ export function createCatalyst<const C extends CatalystConfig>(
 
   const rootEndpoint = createRootEndpoint(config, auth);
 
-  const rootPage = createRootPage(config, data, auth);
+  const rootPage = createDashboard({ data, auth } as CatalystCms, config);
 
   return {
     rootEndpoint,
@@ -34,7 +34,7 @@ export function createCatalyst<const C extends CatalystConfig>(
   };
 }
 
-function getConfigWithDefaults<C extends CatalystConfig>(config: C) {
+function getConfigWithDefaults<const C extends CatalystConfig>(config: C) {
   return deepmerge(
     {
       collections: {
@@ -50,16 +50,5 @@ function getConfigWithDefaults<C extends CatalystConfig>(config: C) {
       }
     },
     config
-  ) as unknown as C & {
-    collections: {
-      users: C["collections"]["users"] & {
-        fields: {
-          email: {
-            type: "text";
-            label: string;
-          };
-        };
-      };
-    };
-  };
+  );
 }

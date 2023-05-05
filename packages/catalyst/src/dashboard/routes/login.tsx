@@ -1,7 +1,7 @@
 import { Logo } from "../components/Logo";
 import { SignInWithGoogle } from "../components/auth/SignInWIthGoogle";
 
-const LoginPage = async () => {
+export async function LoginRoute() {
   return (
     <div className="w-full h-full bg-gray-100 flex flex-col justify-center items-center gap-8">
       <div className="flex gap-3 items-center">
@@ -11,6 +11,4 @@ const LoginPage = async () => {
       <SignInWithGoogle />
     </div>
   );
-};
-
-export default LoginPage;
+}

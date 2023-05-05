@@ -1,4 +1,10 @@
 import { createCatalystAuthObject } from "./auth";
+import { CatalystDataObject } from "./data/types";
+
+export type CatalystCms = {
+  data: CatalystDataObject;
+  auth: CatalystAuth;
+};
 
 export type CatalystConfig = {
   collections: {
@@ -15,11 +21,11 @@ export type CatalystConfig = {
   };
 };
 
-export type CatalystDataType<C extends CatalystConfig> =
+export type CatalystDataType<C extends CatalystConfig = CatalystConfig> =
   | CatalystCollection<C>
   | CatalystGlobal<C>;
 
-export type CatalystCollection<C extends CatalystConfig> =
+export type CatalystCollection<C extends CatalystConfig = CatalystConfig> =
   CatalystBaseDataType<C> & {
     access?: {
       read?: CatalystAccessControlFunction;

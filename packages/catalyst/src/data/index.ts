@@ -14,7 +14,9 @@ import {
 } from "./types";
 import { getLivePreviewDataForCollection } from "../preview";
 
-export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
+export function createCatalystDataObject<C extends CatalystConfig>(
+  config: C
+): CatalystDataObject<C> {
   const { collections, globals } = config;
 
   const collectionsDataObject = Object.keys(collections).reduce((acc, key) => {
@@ -42,7 +44,7 @@ export function createCatalystDataObject<C extends CatalystConfig>(config: C) {
   return {
     ...collectionsDataObject,
     ...globalsDataObject
-  } as CatalystDataObject<C>;
+  };
 }
 
 function createFindAsUserFunction(

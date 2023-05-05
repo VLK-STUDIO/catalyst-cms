@@ -8,7 +8,7 @@ import {
   CatalystTextField
 } from "../types";
 
-export type CatalystDataObject<C extends CatalystConfig> =
+export type CatalystDataObject<C extends CatalystConfig = CatalystConfig> =
   CatalystCollectionDataObject<C> & CatalystGlobalsDataObject<C>;
 
 export type CatalystCollectionDataObject<C extends CatalystConfig> = {
