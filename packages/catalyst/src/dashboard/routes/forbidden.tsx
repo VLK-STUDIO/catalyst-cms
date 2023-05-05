@@ -1,7 +1,8 @@
 import { Logo } from "../components/Logo";
 import { CurrentSubrouteLink } from "../components/CurrentSubrouteLink";
+import { RouteProps } from "./types";
 
-export const ForbiddenPage = () => {
+export function ForbiddenRoute() {
   return (
     <div className="h-full bg-gray-100 flex flex-col items-center justify-center gap-4">
       <Logo className="w-16" />
@@ -18,4 +19,4 @@ export const ForbiddenPage = () => {
       </div>
     </div>
   );
-};
+}

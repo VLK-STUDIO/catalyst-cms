@@ -22,7 +22,7 @@ const fieldMap = {
       {doc[field.key][field.exposedColumn ? field.exposedColumn : "_id"]}
     </span>
   ),
-  derived: () => null,
+  derived: () => null
 } satisfies FieldMap<any>;
 
 type Props = {
@@ -39,12 +39,14 @@ export const TableBody: React.FC<Props> = ({ collection, docs }) => {
             <td key={fieldKey} className="py-2 text-gray-600">
               {fieldMap[field.type](doc, {
                 ...field,
-                key: fieldKey,
+                key: fieldKey
               })}
             </td>
           ))}
           <td className="text-red-600 font-semibold text-right">
-            <CurrentSubrouteLink href={`/edit/${collection.name}/${doc._id}`}>
+            <CurrentSubrouteLink
+              href={`/edit-collection/${collection.name}/${doc._id}`}
+            >
               Edit
             </CurrentSubrouteLink>
           </td>
