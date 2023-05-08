@@ -3,10 +3,13 @@
   "version": "0.0.1",
   "description": "Catalyst CMS",
   "main": "src/index.ts",
+  "files": [
+    "src"
+  ],
   "scripts": {
-    "dev": "pnpm tailwind --watch",
+    "watch": "pnpm tailwind --watch",
     "build": "pnpm tailwind --minify",
-    "tailwind": "npx tailwindcss -o src/dashboard/__generated.css"
+    "tailwind": "tailwindcss -o src/dashboard/__generated.css"
   },
   "dependencies": {
     "@next-auth/mongodb-adapter": "^1.1.3",
