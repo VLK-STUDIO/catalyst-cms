@@ -3,12 +3,13 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev": "concurrently \"cd packages/catalyst && pnpm watch\" \"turbo run dev\"",
     "lint": "turbo run lint",
     "prettify": "prettier --write \"**/*.ts\"",
     "build:blog-example": "turbo run build --filter=blog-example"
   },
   "devDependencies": {
+    "concurrently": "^8.0.1",
     "prettier": "^2.8.8",
     "turbo": "latest"
   },
