@@ -4,9 +4,9 @@
   "description": "Catalyst CMS",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "pnpm uno --watch",
-    "build": "pnpm uno",
-    "uno": "unocss \"src/**/*.tsx\" -o src/dashboard/__generated.css"
+    "dev": "pnpm tailwind --watch",
+    "build": "pnpm tailwind --minify",
+    "tailwind": "npx tailwindcss -o src/dashboard/__generated.css"
   },
   "dependencies": {
     "@next-auth/mongodb-adapter": "^1.1.3",
@@ -14,7 +14,6 @@
     "@tiptap/pm": "^2.0.3",
     "@tiptap/react": "^2.0.3",
     "@tiptap/starter-kit": "^2.0.3",
-    "@unocss/reset": "^0.51.8",
     "clsx": "^1.2.1",
     "colorette": "^2.0.20",
     "deepmerge": "^4.3.1",
@@ -32,16 +31,14 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.9",
     "@types/flat": "^5.0.2",
     "@types/lodash": "^4.14.194",
     "@types/react": "18.0.37",
     "@types/react-dom": "18.0.11",
-    "@unocss/cli": "^0.51.8",
-    "@unocss/preset-typography": "^0.51.8",
-    "@unocss/preset-uno": "^0.51.8",
     "mongodb": "^5.3.0",
     "next": "13.3.0",
-    "typescript": "5.1.0-beta",
-    "unocss": "^0.51.8"
+    "tailwindcss": "^3.3.1",
+    "typescript": "5.1.0-beta"
   }
 }
