@@ -10,6 +10,7 @@ import { useMemo } from "react";
 import { FormField } from "./types";
 import clsx from "clsx";
 import { getObjectWithDepopulatedReferences } from "./utils";
+import { useToast } from "../../hooks/useToast";
 
 type Props = {
   fields: FormField[];
@@ -33,10 +34,10 @@ export const Form: React.FC<Props> = ({
   title,
   previewUrl,
   i18n,
-  typeName,
+  typeName
 }) => {
   const params = useSearchParams();
-
+  const { showToast } = useToast();
   const locale = useMemo(
     () => (params ? params.get("locale") : null),
     [params]
@@ -46,36 +47,38 @@ export const Form: React.FC<Props> = ({
     defaultValues: fields.reduce(
       (acc, curr) => ({ ...acc, [curr.name]: curr.value }),
       {}
-    ),
+    )
   });
 
-  const onSubmit = form.handleSubmit(async (data) => {
+  const onSubmit = form.handleSubmit(async data => {
     const depopulatedData = getObjectWithDepopulatedReferences(data);
 
     const res = await fetch(`${endpoint}${locale ? `?locale=${locale}` : ""}`, {
       method,
-      body: JSON.stringify(depopulatedData),
+      body: JSON.stringify(depopulatedData)
     });
 
     if (!res.ok) {
+      showToast({ title: "Something went wrong. Try again", type: "error" });
       throw new Error("Bad server response:" + res.status);
     }
+    showToast({ title: "Operation completed", type: "success" });
   });
 
   const liveData = form.watch();
 
   return (
-    <div className="flex h-full relative">
+    <div className="relative flex h-full">
       <div
         className={clsx(
-          "flex flex-col relative p-16 bg-gray-100 w-full",
+          "relative flex w-full flex-col bg-gray-100 p-16",
           previewUrl && "max-w-lg"
         )}
       >
-        <h1 className="text-red-600 font-black text-4xl mb-8 uppercase">
+        <h1 className="mb-8 text-4xl font-black uppercase text-red-600">
           {title}
         </h1>
-        <form onSubmit={onSubmit} className="relative flex flex-col gap-4">
+        <form onSubmit={onSubmit} className=" flex flex-col gap-4">
           <FormElements form={form} fields={fields} />
           <Button className="mt-4" type="submit">
             {submitText}

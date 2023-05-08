@@ -9,6 +9,7 @@ import { LogoutRoute } from "./routes/logout";
 import { EditCollectionRoute } from "./routes/editCollection";
 import { EditGlobalRoute } from "./routes/editGlobal";
 import { ForbiddenRoute } from "./routes/forbidden";
+import { ToastProvider } from "./_shared/Toast/ToastProvider";
 import "./__generated.css";
 
 const ROUTE_MAP: Record<
@@ -50,7 +51,7 @@ export function createDashboard(cms: CatalystCms, config: CatalystConfig) {
     const RouteComponent = ROUTE_MAP[matchedRoute] || notFound();
 
     return (
-      <div className="w-full h-full overflow-y-auto bg-gray-100">
+      <div className="h-full w-full overflow-y-auto bg-gray-100">
         {/* @ts-expect-error Server Components */}
         <RouteComponent
           cms={cms}
@@ -59,6 +60,7 @@ export function createDashboard(cms: CatalystCms, config: CatalystConfig) {
           session={session}
           searchParams={searchParams}
         />
+        <ToastProvider />
       </div>
     );
   };
