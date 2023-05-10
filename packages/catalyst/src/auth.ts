@@ -2,6 +2,7 @@ import NextAuth, { AuthOptions, getServerSession } from "next-auth";
 import mongoClientPromise from "./mongo";
 import { NextApiRequest, NextApiResponse } from "next";
 import { CatalystAuthConfig } from "./types";
+import { Provider } from "next-auth/providers";
 
 export function isAuthRequest(req: NextApiRequest) {
   return req.url!.includes("auth");
@@ -12,7 +13,7 @@ export function createCatalystAuthObject({
   whitelist
 }: CatalystAuthConfig) {
   const authOptions: AuthOptions = {
-    providers,
+    providers: providers as Provider[],
     callbacks: {
       signIn: async ({ user }) => {
         if (process.env.NODE_ENV === "development") return true;
