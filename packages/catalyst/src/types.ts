@@ -1,6 +1,7 @@
 import { AuthOptions } from "next-auth";
 import { createCatalystAuthObject } from "./auth";
 import { CatalystDataObject, ComputedCatalystFields } from "./data/types";
+import { Provider } from "next-auth/providers";
 
 export type CatalystCms = {
   data: CatalystDataObject;
@@ -69,7 +70,7 @@ export type CatalystAuthConfig = {
     collection: string;
     field: string;
   };
-  providers: AuthOptions["providers"];
+  providers: readonly Provider[];
 };
 
 export type CatalystAuth = ReturnType<typeof createCatalystAuthObject>;
