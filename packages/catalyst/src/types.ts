@@ -1,15 +1,21 @@
+import { AuthOptions } from "next-auth";
 import { createCatalystAuthObject } from "./auth";
-import { CatalystDataObject } from "./data/types";
+import { CatalystDataObject, ComputedCatalystFields } from "./data/types";
 
 export type CatalystCms = {
   data: CatalystDataObject;
   auth: CatalystAuth;
 };
 
+export type UserCatalystConfig = Omit<
+  Optional<CatalystConfig, "i18n">,
+  "auth"
+> & {
+  auth: Optional<CatalystAuthConfig, "whitelist">;
+};
+
 export type CatalystConfig = {
   collections: {
-    users: CatalystCollection<CatalystConfig>;
-  } & {
     [K: string]: CatalystCollection<CatalystConfig>;
   };
   globals: {
@@ -19,6 +25,7 @@ export type CatalystConfig = {
     defaultLocale: string;
     locales: readonly string[];
   };
+  auth: CatalystAuthConfig;
 };
 
 export type CatalystDataType<C extends CatalystConfig = CatalystConfig> =
@@ -55,6 +62,14 @@ export type CatalystBaseDataType<C extends CatalystConfig> = {
   label: string;
   previewUrl?: string;
   fields: CatalystFields<C>;
+};
+
+export type CatalystAuthConfig = {
+  whitelist: {
+    collection: string;
+    field: string;
+  };
+  providers: AuthOptions["providers"];
 };
 
 export type CatalystAuth = ReturnType<typeof createCatalystAuthObject>;
@@ -114,3 +129,5 @@ type FieldHooks<T> = {
   beforeCreate?: (value: T) => T | Promise<T>;
   beforeUpdate?: (value: T) => T | Promise<T>;
 };
+
+type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;

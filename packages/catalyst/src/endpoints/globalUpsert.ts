@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import flatten from "flat";
 import mongoClientPromise from "../mongo";
-import { CatalystConfig } from "../types";
+import { CatalystAuth, CatalystConfig } from "../types";
 import { deserializeMongoPayload, makePayloadLocalized } from "../utils";
 import { canUserUpdateDataType } from "../access";
-import { getCatalystServerSession } from "../auth";
+import { getServerSession } from "next-auth";
 
 export function isGlobalUpsertEndpoint(req: NextApiRequest) {
   const [typeKind] = req.query.catalyst as string[];
@@ -14,6 +14,7 @@ export function isGlobalUpsertEndpoint(req: NextApiRequest) {
 
 export async function handleGlobalUpsert(
   config: CatalystConfig,
+  auth: CatalystAuth,
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -24,7 +25,7 @@ export async function handleGlobalUpsert(
     return res.status(404).end();
   }
 
-  const session = await getCatalystServerSession();
+  const session = await auth.getSessionFromRequest(req, res);
 
   if (!canUserUpdateDataType(session, global)) {
     return res.status(403).json({

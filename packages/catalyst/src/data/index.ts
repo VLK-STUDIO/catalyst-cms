@@ -1,7 +1,6 @@
 import mongoClientPromise from "../mongo";
-import { CatalystConfig, CatalystDataType } from "../types";
+import { CatalystAuth, CatalystConfig, CatalystDataType } from "../types";
 import { delocalizePayload, makeMongoPayloadSerializable } from "../utils";
-import { getCatalystServerSession } from "../auth";
 import { canUserReadDataType } from "../access";
 import {
   CatalystCollectionDataObject,
@@ -14,8 +13,9 @@ import {
 } from "./types";
 import { getLivePreviewDataForCollection } from "../preview";
 
-export function createCatalystDataObject<C extends CatalystConfig>(
-  config: C
+export function createCatalystDataObject<const C extends CatalystConfig>(
+  config: C,
+  auth: CatalystAuth
 ): CatalystDataObject<C> {
   const { collections, globals } = config;
 
@@ -23,10 +23,10 @@ export function createCatalystDataObject<C extends CatalystConfig>(
     return {
       ...acc,
       [key]: {
-        findAsUser: createFindAsUserFunction(key, config),
-        findOneAsUser: createFindOneAsUserFunction(key, config),
-        find: createFindFunction(key, config),
-        findOne: createFindOneFunction(key, config)
+        findAsUser: createFindAsUserFunction({ config, auth }, key),
+        findOneAsUser: createFindOneAsUserFunction({ config, auth }, key),
+        find: createFindFunction(config, key),
+        findOne: createFindOneFunction(config, key)
       }
     };
   }, {} as CatalystCollectionDataObject<C>);
@@ -35,8 +35,8 @@ export function createCatalystDataObject<C extends CatalystConfig>(
     return {
       ...acc,
       [key]: {
-        getAsUser: createGetAsUserFunction(key, config),
-        get: createGetFunction(key, config)
+        getAsUser: createGetAsUserFunction({ config, auth }, key),
+        get: createGetFunction(config, key)
       }
     };
   }, {} as CatalystGlobalsDataObject<C>);
@@ -48,8 +48,14 @@ export function createCatalystDataObject<C extends CatalystConfig>(
 }
 
 function createFindAsUserFunction(
-  collectionKey: string,
-  config: CatalystConfig
+  {
+    config,
+    auth
+  }: {
+    config: CatalystConfig;
+    auth: CatalystAuth;
+  },
+  collectionKey: string
 ) {
   const collection = config.collections[collectionKey];
 
@@ -57,13 +63,13 @@ function createFindAsUserFunction(
     typeof config,
     typeof collectionKey
   > = async options => {
-    const session = await getCatalystServerSession();
+    const session = await auth.getSession();
 
     if (!canUserReadDataType(session, collection)) {
       throw new Error(`Unauthorized read of collection '${collectionKey}'`);
     }
 
-    const find = createFindFunction(collectionKey, config);
+    const find = createFindFunction(config, collectionKey);
 
     return await find(options);
   };
@@ -72,8 +78,14 @@ function createFindAsUserFunction(
 }
 
 function createFindOneAsUserFunction(
-  collectionKey: string,
-  config: CatalystConfig
+  {
+    config,
+    auth
+  }: {
+    config: CatalystConfig;
+    auth: CatalystAuth;
+  },
+  collectionKey: string
 ) {
   const collection = config.collections[collectionKey];
 
@@ -81,13 +93,13 @@ function createFindOneAsUserFunction(
     typeof config,
     typeof collectionKey
   > = async options => {
-    const session = await getCatalystServerSession();
+    const session = await auth.getSession();
 
     if (!canUserReadDataType(session, collection)) {
       throw new Error(`Unauthorized read of collection '${collectionKey}'`);
     }
 
-    const findOne = createFindOneFunction(collectionKey, config);
+    const findOne = createFindOneFunction(config, collectionKey);
 
     return await findOne(options);
   };
@@ -95,7 +107,7 @@ function createFindOneAsUserFunction(
   return func;
 }
 
-function createFindFunction(collectionKey: string, config: CatalystConfig) {
+function createFindFunction(config: CatalystConfig, collectionKey: string) {
   const collection = config.collections[collectionKey];
 
   const func: CatalystFindDataFunction<
@@ -129,8 +141,8 @@ function createFindFunction(collectionKey: string, config: CatalystConfig) {
 }
 
 function createFindOneFunction<C extends CatalystConfig>(
-  collectionKey: string,
-  config: C
+  config: C,
+  collectionKey: string
 ) {
   const collection = config.collections[collectionKey];
 
@@ -170,19 +182,22 @@ function createFindOneFunction<C extends CatalystConfig>(
   return func;
 }
 
-function createGetAsUserFunction(globalKey: string, config: CatalystConfig) {
+function createGetAsUserFunction(
+  { config, auth }: { config: CatalystConfig; auth: CatalystAuth },
+  globalKey: string
+) {
   const global = config.globals[globalKey];
 
   const func: CatalystGetDataFunction<typeof config, typeof globalKey> = async (
     options = {}
   ) => {
-    const session = await getCatalystServerSession();
+    const session = await auth.getSession();
 
     if (!canUserReadDataType(session, global)) {
       throw new Error(`Unauthorized read of global '${globalKey}'`);
     }
 
-    const get = createGetFunction(globalKey, config);
+    const get = createGetFunction(config, globalKey);
 
     return await get(options);
   };
@@ -190,7 +205,7 @@ function createGetAsUserFunction(globalKey: string, config: CatalystConfig) {
   return func;
 }
 
-function createGetFunction(globalKey: string, config: CatalystConfig) {
+function createGetFunction(config: CatalystConfig, globalKey: string) {
   const global = config.globals[globalKey];
 
   const func: CatalystGetDataFunction<typeof config, typeof globalKey> = async (
