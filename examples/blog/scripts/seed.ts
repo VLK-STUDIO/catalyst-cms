@@ -17,7 +17,8 @@ client
         {
           $set: {
             _id: new ObjectId("644a7b5b9955bfc3c588198e"),
-            fullName: "Adam Bravoran"
+            fullName: "Adam Bravoran",
+            role: "admin"
           }
         },
         {
