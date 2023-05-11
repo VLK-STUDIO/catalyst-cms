@@ -21,7 +21,7 @@ export async function CreateRoute({ config, session, params }: RouteProps) {
         typeName={collectionName}
         fields={fields}
         method="POST"
-        endpoint={`/api/collection/${name}`}
+        endpoint={`/api/collection/${collectionName}`}
         submitText="Create"
         title={`CREATE ${collection.label.toUpperCase()}`}
         i18n={config.i18n}
