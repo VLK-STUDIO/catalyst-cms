@@ -1,7 +1,12 @@
 import { ObjectId } from "mongodb";
 import _ from "lodash";
 import { logWarning } from "./logger";
-import { CatalystFields } from "./types";
+import {
+  CatalystConfig,
+  CatalystFieldType,
+  CatalystFields,
+  UserCatalystConfig
+} from "./types";
 
 /**
  * Applies the given locale to a payload
@@ -172,4 +177,60 @@ function deepIterateOnKey(
   }
 
   return newObj;
+}
+
+/**
+ * Return a object that contains all the fields with exposed set to true if the exposed is undefined
+ *
+ * The types that already have exposed set to false or are in the excludedFields are ignored
+ *
+ * @param fields The fields of the collection
+ * @param excludedFields An array of field types that will have exposed set to false
+ * @returns An object that update all the fields with exposed set to true if the exposed is undefined
+ */
+function setExposedToFields({
+  fields
+}: {
+  fields: CatalystFields<CatalystConfig>;
+}) {
+  return Object.entries(fields).reduce((acc, [key, field]) => {
+    if (field.exposed === undefined) {
+      return {
+        ...acc,
+        [key]: {
+          ...field,
+          exposed: true
+        }
+      };
+    }
+    return {
+      ...acc
+    };
+  }, {});
+}
+
+/**
+ * Get the cms collections that contains all the fields with exposed set to true if that is undefined and the excludedFields are not in the excludedFields array.
+ *
+ *
+ * @param config The cms config object
+ * @returns cms config with all the fields exposed value set to true
+ */
+export function updateCollectionFields(config: UserCatalystConfig) {
+  const updatedCollectionFields = Object.entries(config.collections).reduce(
+    (acc, [key, collection]) => {
+      return {
+        ...acc,
+        [key]: {
+          ...collection,
+          fields: setExposedToFields({
+            fields: collection.fields
+          })
+        }
+      };
+    },
+    {}
+  );
+
+  return updatedCollectionFields;
 }

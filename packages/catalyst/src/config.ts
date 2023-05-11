@@ -3,6 +3,7 @@ import { createDashboard } from "./dashboard";
 import { createCatalystAuthObject } from "./auth";
 import { createCatalystDataObject } from "./data";
 import { createRootEndpoint } from "./endpoints";
+import { updateCollectionFields } from "./utils";
 
 export function createCatalyst<const C extends UserCatalystConfig>(
   userConfig: C
@@ -26,8 +27,10 @@ export function createCatalyst<const C extends UserCatalystConfig>(
 }
 
 function getConfigWithDefaults<const C extends UserCatalystConfig>(config: C) {
+  const updatedConfigCollections = updateCollectionFields(config);
   return {
     ...config,
+    collections: updatedConfigCollections,
     i18n: {
       defaultLocale: "en",
       locales: ["en"],
