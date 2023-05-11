@@ -73,6 +73,10 @@ export const cms = createCatalyst({
     }
   },
   auth: {
+    whitelist: {
+      collection: "users",
+      field: "email"
+    },
     providers: [
       GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID!,

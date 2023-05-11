@@ -32,13 +32,6 @@ function getConfigWithDefaults<const C extends UserCatalystConfig>(config: C) {
       defaultLocale: "en",
       locales: ["en"],
       ...(config.i18n ?? {})
-    },
-    auth: {
-      whitelist: {
-        collection: "users",
-        field: "email"
-      },
-      ...(config.auth ?? {})
     }
   };
 }

@@ -8,12 +8,7 @@ export type CatalystCms = {
   auth: CatalystAuth;
 };
 
-export type UserCatalystConfig = Omit<
-  Optional<CatalystConfig, "i18n">,
-  "auth"
-> & {
-  auth: Optional<CatalystAuthConfig, "whitelist">;
-};
+export type UserCatalystConfig = Optional<CatalystConfig, "i18n">;
 
 export type CatalystConfig = {
   collections: {
