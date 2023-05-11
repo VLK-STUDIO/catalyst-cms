@@ -1,5 +1,5 @@
 import { CatalystCollection, CatalystField } from "../../../types";
-import { CurrentSubrouteLink } from "../CurrentSubrouteLink";
+import { CurrentSubrouteLink } from "../_shared/CurrentSubrouteLink";
 
 type FieldMap<T extends CatalystField<any>> = Record<
   T["type"],
@@ -8,7 +8,7 @@ type FieldMap<T extends CatalystField<any>> = Record<
 
 const fieldMap = {
   richtext: (doc, field) => (
-    <div>{doc[field.key].replace(/<[^>]*>?/gm, "")}</div>
+    <span>{doc[field.key].replace(/<[^>]*>?/gm, "")}</span>
   ),
   select: (doc, field) => {
     const option = field.options.find(
@@ -36,14 +36,14 @@ export const TableBody: React.FC<Props> = ({ collection, docs }) => {
       {docs.map((doc, index: number) => (
         <tr key={index}>
           {Object.entries(collection.fields).map(([fieldKey, field]) => (
-            <td key={fieldKey} className="py-2 text-gray-600">
+            <td key={fieldKey} className="truncate py-2 text-gray-600">
               {fieldMap[field.type](doc, {
                 ...field,
                 key: fieldKey
               })}
             </td>
           ))}
-          <td className="text-red-600 font-semibold text-right">
+          <td className="text-right font-semibold text-red-600">
             <CurrentSubrouteLink
               href={`/edit-collection/${collection.name}/${doc._id}`}
             >

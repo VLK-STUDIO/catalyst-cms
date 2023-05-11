@@ -1,5 +1,5 @@
 import { CatalystDataType } from "../types";
-import { FormField } from "./components/form/types";
+import { FormField } from "./components/_shared/Form/types";
 import mongoClientPromise from "../mongo";
 import { convertObjectIdsToString } from "../utils";
 

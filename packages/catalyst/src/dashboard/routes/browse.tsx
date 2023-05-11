@@ -1,5 +1,5 @@
 import { IconPlus } from "@tabler/icons-react";
-import { CurrentSubrouteLink } from "../components/CurrentSubrouteLink";
+import { CurrentSubrouteLink } from "../components/_shared/CurrentSubrouteLink";
 import { TableBody } from "../components/browse/TableBody";
 import { notFound } from "next/navigation";
 import { RouteProps } from "./types";
@@ -14,15 +14,15 @@ export async function BrowseRoute({ cms, params, config }: RouteProps) {
   });
 
   return (
-    <div className="flex flex-col p-16 h-full">
-      <h1 className="text-red-600 font-black text-4xl mb-8 uppercase">
+    <div className="flex h-full flex-col p-16">
+      <h1 className="mb-8 text-4xl font-black uppercase text-red-600">
         BROWSE {collection.label}
       </h1>
-      <table>
+      <table className="w-full table-fixed">
         <thead>
           <tr className="border-b border-gray-300">
             {Object.entries(collection.fields).map(([key, field]) => (
-              <th key={key} className="text-left py-2 font-semibold">
+              <th key={key} className="py-2 text-left font-semibold">
                 {field.label}
               </th>
             ))}
@@ -35,7 +35,7 @@ export async function BrowseRoute({ cms, params, config }: RouteProps) {
       </table>
       <CurrentSubrouteLink
         href={`/create/${collectionName}`}
-        className="absolute right-0 bottom-0 m-16 bg-red-600 text-white p-4 rounded-full hover:bg-red-700"
+        className="absolute bottom-0 right-0 m-16 rounded-full bg-red-600 p-4 text-white hover:bg-red-700"
       >
         <IconPlus />
       </CurrentSubrouteLink>

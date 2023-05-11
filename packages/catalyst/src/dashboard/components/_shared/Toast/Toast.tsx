@@ -31,10 +31,10 @@ export const Toast: React.FC<ToastProps> = ({ title, type }) => {
   const selectedStyle = toastTypeStyleMap[type];
   const SelectedToastIcon = toastIconMap[type];
   return (
-    <div className="flex items-center gap-2 rounded-md   drop-shadow-lg">
+    <div className="flex items-center gap-2">
       <div
         className={clsx(
-          "w-100 flex content-center items-center gap-2 text-lg text-black ",
+          "flex content-center items-center gap-2 text-black",
           selectedStyle
         )}
       >
