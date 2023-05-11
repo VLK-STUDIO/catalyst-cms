@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { handleAuthRequest, isAuthRequest } from "../auth";
+import { isAuthRequest } from "../auth";
 import { CatalystAuth, CatalystConfig } from "../types";
 import {
   isCollectionEntryCreationEndpoint,
@@ -21,7 +21,7 @@ export function createRootEndpoint<C extends CatalystConfig>(
   ) {
     // Handle NextAuth routes
     if (isAuthRequest(req)) {
-      return await handleAuthRequest(req, res);
+      return await auth.handleAuthRequest(req, res);
     }
 
     // Handle Catalyst routes
@@ -30,7 +30,7 @@ export function createRootEndpoint<C extends CatalystConfig>(
     else if (isCollectionEntryUpdateEndpoint(req))
       return await handleCollectionEntryUpdate(config, req, res, auth);
     else if (isGlobalUpsertEndpoint(req))
-      return await handleGlobalUpsert(config, req, res);
+      return await handleGlobalUpsert(config, auth, req, res);
     else {
       return res.status(404).json({
         message: "Route not found"
