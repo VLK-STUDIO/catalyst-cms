@@ -2,6 +2,7 @@ import { Filter } from "mongodb";
 import {
   CatalystConfig,
   CatalystDerivedField,
+  CatalystField,
   CatalystFields,
   CatalystReferenceField,
   CatalystRichTextField,
@@ -67,16 +68,29 @@ export type ComputedCatalystFields<
   C extends CatalystConfig,
   F extends CatalystFields<C>
 > = {
-  [K in keyof F]: F[K] extends CatalystReferenceField<C>
-    ? ComputedCatalystFields<C, C["collections"][F[K]["collection"]]["fields"]>
-    : F[K] extends CatalystTextField
-    ? string
-    : F[K] extends CatalystRichTextField
-    ? string
-    : F[K] extends CatalystDerivedField
-    ? string
-    : never;
+  [K in keyof F]: ComputedCatalystField<C, F[K]>;
 };
+
+type ComputedCatalystField<
+  C extends CatalystConfig,
+  F extends CatalystField<C>
+> = WithCatalystOptionalCheck<
+  F,
+  F extends CatalystReferenceField<C>
+    ? ComputedCatalystFields<C, C["collections"][F["collection"]]["fields"]>
+    : F extends CatalystTextField
+    ? string
+    : F extends CatalystRichTextField
+    ? string
+    : F extends CatalystDerivedField
+    ? any
+    : never
+>;
+
+type WithCatalystOptionalCheck<
+  F extends CatalystField,
+  T
+> = F["optional"] extends true ? T | undefined : T;
 
 export type QueryOptions<T extends Record<string, any>> = {
   include?: Array<keyof T>;

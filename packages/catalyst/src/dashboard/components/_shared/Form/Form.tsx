@@ -62,11 +62,24 @@ export const Form: React.FC<Props> = ({
     });
 
     if (!res.ok) {
-      showToast({ title: "Something went wrong. Try again", type: "error" });
-      throw new Error("Bad server response:" + res.status);
-    }
+      if (res.status === 400) {
+        const { error, field } = await res.json();
 
-    showToast({ title: "Operation completed", type: "success" });
+        if (field) {
+          form.setError(field, { message: error });
+        }
+
+        showToast({
+          title: "Validation error",
+          description: error,
+          type: "error"
+        });
+      } else {
+        showToast({ title: "Something went wrong. Try again.", type: "error" });
+      }
+    } else {
+      showToast({ title: "Operation complete!", type: "success" });
+    }
 
     setPending(false);
   });
@@ -84,7 +97,7 @@ export const Form: React.FC<Props> = ({
         <h1 className="mb-8 text-4xl font-black uppercase text-red-600">
           {title}
         </h1>
-        <form onSubmit={onSubmit} className=" flex flex-col gap-4">
+        <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <FormElements form={form} fields={fields} />
           <Button className="mt-4" type="submit" loading={pending}>
             {submitText}

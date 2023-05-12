@@ -5,7 +5,7 @@ import { deserializeMongoPayload, makePayloadLocalized } from "../utils";
 import { canUserUpdateDataType } from "../access";
 import { flatten } from "flat";
 import { ObjectId } from "mongodb";
-import { getPayloadWithDerivedFields } from "./utils";
+import { getPayloadWithDerivedFields, validateDocForDataType } from "./utils";
 
 export function isCollectionEntryUpdateEndpoint(req: NextApiRequest) {
   const [typeKind] = req.query.catalyst as string[];
@@ -43,7 +43,11 @@ export async function handleCollectionEntryUpdate(
     });
   }
 
-  // TODO: Validate payload
+  const validationResult = validateDocForDataType(collection, json);
+
+  if (!validationResult.success) {
+    return res.status(400).json(validationResult);
+  }
 
   if (collection.hooks && collection.hooks.beforeUpdate) {
     json = await collection.hooks.beforeUpdate(json);

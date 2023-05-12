@@ -4,7 +4,7 @@ import mongoClientPromise from "../mongo";
 import { CatalystAuth, CatalystConfig } from "../types";
 import { deserializeMongoPayload, makePayloadLocalized } from "../utils";
 import { canUserUpdateDataType } from "../access";
-import { getServerSession } from "next-auth";
+import { validateDocForDataType } from "./utils";
 
 export function isGlobalUpsertEndpoint(req: NextApiRequest) {
   const [typeKind] = req.query.catalyst as string[];
@@ -42,7 +42,11 @@ export async function handleGlobalUpsert(
     });
   }
 
-  // TODO: Validate payload
+  const validationResult = validateDocForDataType(global, json);
+
+  if (!validationResult.success) {
+    return res.status(400).json(validationResult);
+  }
 
   // Run hooks
   if (global.hooks && global.hooks.beforeUpdate) {

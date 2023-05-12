@@ -1,10 +1,3 @@
-import {
-  Icon,
-  IconAlertCircle,
-  IconCircleCheck,
-  IconCircleX,
-  IconInfoCircle
-} from "@tabler/icons-react";
 import { ToastType } from "./types";
 import clsx from "clsx";
 
@@ -15,31 +8,28 @@ const toastTypeStyleMap: Record<ToastType, string> = {
   info: "text-blue-500"
 };
 
-const toastIconMap: Record<ToastType, Icon> = {
-  success: IconCircleCheck,
-  error: IconCircleX,
-  info: IconInfoCircle,
-  warning: IconAlertCircle
-};
-
 export type ToastProps = {
   type: ToastType;
   title: string;
+  description?: string;
 };
 
-export const Toast: React.FC<ToastProps> = ({ title, type }) => {
+export const Toast: React.FC<ToastProps> = ({ title, type, description }) => {
   const selectedStyle = toastTypeStyleMap[type];
-  const SelectedToastIcon = toastIconMap[type];
   return (
     <div className="flex items-center gap-2">
       <div
         className={clsx(
-          "flex content-center items-center gap-2 text-black",
+          "flex content-center items-center gap-4",
           selectedStyle
         )}
       >
-        <SelectedToastIcon />
-        {title}
+        <div className="flex flex-col gap-1">
+          <span className="font-semibold">{title}</span>
+          {description && (
+            <span className="text-sm text-gray-400">{description}</span>
+          )}
+        </div>
       </div>
     </div>
   );

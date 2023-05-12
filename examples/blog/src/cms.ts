@@ -36,7 +36,12 @@ export const cms = createCatalyst({
         },
         description: {
           type: "text",
-          label: "Description"
+          label: "Description",
+          validate: v =>
+            v.length > 64
+              ? "Description must be less than 64 characters long"
+              : null,
+          optional: true
         },
         content: {
           type: "richtext",
