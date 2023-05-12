@@ -1,4 +1,4 @@
-import { Form } from "../components/form/Form";
+import { Form } from "../components/_shared/Form";
 import { getFormFieldsFromDataType } from "../utils";
 import { canUserUpdateDataType } from "../../access";
 import { notFound, redirect } from "next/navigation";

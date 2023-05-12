@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import wretch from "wretch";
-import { useDebounce } from "../hooks/useDebounce";
+import { useDebounce } from "../../../hooks/useDebounce";
 
 type Props = {
   url: string;
@@ -10,7 +10,7 @@ type Props = {
   typeName: string;
 };
 
-export const LivePreviewFrame: React.FC<Props> = (props) => {
+export const LivePreviewFrame: React.FC<Props> = props => {
   const ref = useRef<HTMLIFrameElement>(null);
 
   const debouncedData = useDebounce(props.data, 500);
@@ -20,11 +20,11 @@ export const LivePreviewFrame: React.FC<Props> = (props) => {
       .headers({
         [`x-catalyst-live-preview-${props.typeName}`]: encodeURIComponent(
           JSON.stringify(debouncedData)
-        ),
+        )
       })
       .get()
       .text()
-      .then((data) => {
+      .then(data => {
         // @ts-ignore
         ref.current.contentWindow.contents = data;
         // @ts-ignore
@@ -33,11 +33,11 @@ export const LivePreviewFrame: React.FC<Props> = (props) => {
   }, [props.url, debouncedData]);
 
   return (
-    <div className="w-full flex justify-center items-center p-16 border-l border-gray-300">
+    <div className="flex w-full items-center justify-center border-l border-gray-300 bg-white p-16">
       <iframe
         src={props.url}
         ref={ref}
-        className="w-full h-full border border-gray-300 rounded overflow-hidden"
+        className="h-full w-full overflow-hidden rounded border border-gray-300"
       />
     </div>
   );

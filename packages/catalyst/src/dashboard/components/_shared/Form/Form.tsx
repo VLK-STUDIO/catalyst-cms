@@ -3,14 +3,14 @@
 import { useForm } from "react-hook-form";
 import { Button } from "../Button";
 import { useSearchParams } from "next/navigation";
-import { LocaleSwitch } from "../LocaleSwitch";
-import { LivePreviewFrame } from "../LivePreviewFrame";
+import { LocaleSwitch } from "./LocaleSwitch";
+import { LivePreviewFrame } from "./LivePreviewFrame";
 import { FormElements } from "./FormElements";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { FormField } from "./types";
 import clsx from "clsx";
 import { getObjectWithDepopulatedReferences } from "./utils";
-import { useToast } from "../../hooks/useToast";
+import { useToast } from "../../../hooks/useToast";
 
 type Props = {
   fields: FormField[];
@@ -42,6 +42,7 @@ export const Form: React.FC<Props> = ({
     () => (params ? params.get("locale") : null),
     [params]
   );
+  const [pending, setPending] = useState(false);
 
   const form = useForm({
     defaultValues: fields.reduce(
@@ -53,6 +54,8 @@ export const Form: React.FC<Props> = ({
   const onSubmit = form.handleSubmit(async data => {
     const depopulatedData = getObjectWithDepopulatedReferences(data);
 
+    setPending(true);
+
     const res = await fetch(`${endpoint}${locale ? `?locale=${locale}` : ""}`, {
       method,
       body: JSON.stringify(depopulatedData)
@@ -62,7 +65,10 @@ export const Form: React.FC<Props> = ({
       showToast({ title: "Something went wrong. Try again", type: "error" });
       throw new Error("Bad server response:" + res.status);
     }
+
     showToast({ title: "Operation completed", type: "success" });
+
+    setPending(false);
   });
 
   const liveData = form.watch();
@@ -80,7 +86,7 @@ export const Form: React.FC<Props> = ({
         </h1>
         <form onSubmit={onSubmit} className=" flex flex-col gap-4">
           <FormElements form={form} fields={fields} />
-          <Button className="mt-4" type="submit">
+          <Button className="mt-4" type="submit" loading={pending}>
             {submitText}
           </Button>
         </form>

@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { canUserUpdateDataType } from "../../access";
-import { Form } from "../components/form/Form";
+import { Form } from "../components/_shared/Form";
 import { getFormFieldsFromDataType } from "../utils";
 import { RouteProps } from "./types";
 

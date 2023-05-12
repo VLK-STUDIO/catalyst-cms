@@ -1,7 +1,6 @@
-import { ToastType } from "../_shared/Toast/types";
-import { Toast, ToastProps } from "../_shared/Toast/Toast";
 import { ToastPosition, toast } from "react-toastify";
 import clsx from "clsx";
+import { Toast, ToastProps, ToastType } from "../components/_shared/Toast";
 
 export type ToastContent = {
   type: ToastType;
@@ -10,11 +9,12 @@ export type ToastContent = {
 };
 
 type ShowToastAttributes = ToastProps & { position?: ToastPosition };
+
 const containerStyleMap: Record<ToastType, string> = {
-  success: "!border-green-500",
-  error: "!border-red-500",
-  warning: "!border-yellow-500",
-  info: "!border-blue-500"
+  success: "!border-l-green-500",
+  error: "!border-l-red-500",
+  warning: "!border-l-yellow-500",
+  info: "!border-l-blue-500"
 };
 
 export function useToast() {
@@ -27,7 +27,7 @@ export function useToast() {
     toast(<Toast {...toastProps} />, {
       position,
       className: clsx(
-        "!p-2 bg-gray-50 drop-shadow-lg border-l-8",
+        "!p-2 bg-gray-100 border-l-8 border border-gray-300",
         selectedStyle
       ),
       hideProgressBar: true,
