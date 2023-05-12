@@ -22,7 +22,7 @@ const fieldMap = {
       {doc[field.key][field.exposedColumn ? field.exposedColumn : "_id"]}
     </span>
   ),
-  derived: () => null
+  derived: (doc, field) => <span>{doc[field.key]}</span>
 } satisfies FieldMap<any>;
 
 type Props = {
