@@ -3,6 +3,7 @@ import { CurrentSubrouteLink } from "../components/_shared/CurrentSubrouteLink";
 import { TableBody } from "../components/browse/TableBody";
 import { notFound } from "next/navigation";
 import { RouteProps } from "./types";
+import { TableHead } from "../components/browse/TableHead";
 
 export async function BrowseRoute({ cms, params, config }: RouteProps) {
   const [_, collectionName] = params;
@@ -13,24 +14,21 @@ export async function BrowseRoute({ cms, params, config }: RouteProps) {
     autopopulate: true
   });
 
+  const exposedFields = Object.entries(collection.fields).filter(
+    ([_, field]) => field.exposed
+  );
+
   return (
     <div className="flex h-full flex-col p-16">
       <h1 className="mb-8 text-4xl font-black uppercase text-red-600">
         BROWSE {collection.label}
       </h1>
       <table className="w-full table-fixed">
-        <thead>
-          <tr className="border-b border-gray-300">
-            {Object.entries(collection.fields).map(([key, field]) => (
-              <th key={key} className="py-2 text-left font-semibold">
-                {field.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
+        <TableHead exposedFields={exposedFields} />
         <TableBody
           docs={docs}
-          collection={{ ...collection, name: collectionName }}
+          collectionName={collectionName}
+          exposedFields={exposedFields}
         />
       </table>
       <CurrentSubrouteLink

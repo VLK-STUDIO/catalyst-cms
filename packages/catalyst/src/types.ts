@@ -93,6 +93,8 @@ export type CatalystDerivedField = CatalystFieldBase & {
   validate?: CatalystFieldValidationFunction<any>;
 };
 
+export type CatalystFieldType = CatalystField<CatalystConfig>["type"];
+
 export type CatalystSelectField = CatalystFieldBase & {
   type: "select";
   localized?: boolean;
@@ -127,6 +129,7 @@ export type CatalystValidationError = Record<string, string>;
 type CatalystFieldBase = {
   label: string;
   optional?: boolean;
+  exposed?: boolean;
 };
 
 type CatalystFieldValidationFunction<T> = (

@@ -1,7 +1,12 @@
 import { ObjectId } from "mongodb";
 import _ from "lodash";
 import { logWarning } from "./logger";
-import { CatalystFields } from "./types";
+import {
+  CatalystConfig,
+  CatalystFieldType,
+  CatalystFields,
+  UserCatalystConfig
+} from "./types";
 
 /**
  * Applies the given locale to a payload

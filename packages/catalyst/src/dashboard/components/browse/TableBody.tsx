@@ -22,30 +22,41 @@ const fieldMap = {
       {doc[field.key][field.exposedColumn ? field.exposedColumn : "_id"]}
     </span>
   ),
-  derived: () => null
+  derived: (doc, field) => <span>{doc[field.key]}</span>
 } satisfies FieldMap<any>;
 
 type Props = {
   docs: any[];
-  collection: CatalystCollection<any> & { name: string };
+  exposedFields: [string, CatalystField<any>][];
+  collectionName: string;
 };
 
-export const TableBody: React.FC<Props> = ({ collection, docs }) => {
+export const TableBody: React.FC<Props> = ({
+  exposedFields,
+  docs,
+  collectionName
+}) => {
   return (
     <tbody>
       {docs.map((doc, index: number) => (
         <tr key={index}>
-          {Object.entries(collection.fields).map(([fieldKey, field]) => (
-            <td key={fieldKey} className="truncate py-2 text-gray-600">
-              {fieldMap[field.type](doc, {
-                ...field,
-                key: fieldKey
-              })}
-            </td>
-          ))}
+          {exposedFields.length > 0 ? (
+            exposedFields.map(([fieldKey, field]) => {
+              return (
+                <td key={fieldKey} className="truncate py-2 text-gray-600">
+                  {fieldMap[field.type](doc, {
+                    ...field,
+                    key: fieldKey
+                  })}
+                </td>
+              );
+            })
+          ) : (
+            <td className="py-2 text-gray-600">{doc._id}</td>
+          )}
           <td className="text-right font-semibold text-red-600">
             <CurrentSubrouteLink
-              href={`/edit-collection/${collection.name}/${doc._id}`}
+              href={`/edit-collection/${collectionName}/${doc._id}`}
             >
               Edit
             </CurrentSubrouteLink>
