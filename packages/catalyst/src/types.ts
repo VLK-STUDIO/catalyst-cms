@@ -1,6 +1,5 @@
-import { AuthOptions } from "next-auth";
 import { createCatalystAuthObject } from "./auth";
-import { CatalystDataObject, ComputedCatalystFields } from "./data/types";
+import { CatalystDataObject } from "./data/types";
 import { Provider } from "next-auth/providers";
 
 export type CatalystCms = {
@@ -76,50 +75,63 @@ export type CatalystFields<C extends CatalystConfig> = {
   [K: string]: CatalystField<C>;
 };
 
-export type CatalystField<C extends CatalystConfig> = CatalystFieldBase &
-  (
-    | CatalystTextField
-    | CatalystRichTextField
-    | CatalystReferenceField<C>
-    | CatalystSelectField
-    | CatalystDerivedField
-  );
+export type CatalystField<C extends CatalystConfig = CatalystConfig> =
+  CatalystFieldBase &
+    (
+      | CatalystTextField
+      | CatalystRichTextField
+      | CatalystReferenceField
+      | CatalystSelectField
+      | CatalystDerivedField
+    );
 
 export type CatalystDerivedField = CatalystFieldBase & {
   type: "derived";
   readonly getter: (
     param: Record<string, any>
   ) => Promise<string | number> | string | number;
+  validate?: CatalystFieldValidationFunction<any>;
 };
 
 export type CatalystSelectField = CatalystFieldBase & {
   type: "select";
   localized?: boolean;
   options: readonly { label: string; value: string }[];
+  validate?: CatalystFieldValidationFunction<string>;
 };
 
 export type CatalystTextField = CatalystFieldBase & {
   type: "text";
   localized?: boolean;
   hooks?: FieldHooks<string>;
+  validate?: CatalystFieldValidationFunction<string>;
 };
 
 export type CatalystRichTextField = CatalystFieldBase & {
   type: "richtext";
   localized?: boolean;
   hooks?: FieldHooks<string>;
+  validate?: CatalystFieldValidationFunction<string>;
 };
 
-export type CatalystReferenceField<C extends CatalystConfig> =
+export type CatalystReferenceField<C extends CatalystConfig = CatalystConfig> =
   CatalystFieldBase & {
     type: "reference";
     collection: keyof C["collections"];
     exposedColumn?: string;
+    validate?: CatalystFieldValidationFunction<any>;
   };
+
+export type CatalystValidationError = Record<string, string>;
 
 type CatalystFieldBase = {
   label: string;
+  optional?: boolean;
 };
+
+type CatalystFieldValidationFunction<T> = (
+  value: T
+) => string | false | null | undefined;
 
 type FieldHooks<T> = {
   beforeCreate?: (value: T) => T | Promise<T>;

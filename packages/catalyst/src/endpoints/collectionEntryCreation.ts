@@ -3,7 +3,7 @@ import mongoClientPromise from "../mongo";
 import { CatalystAuth, CatalystConfig } from "../types";
 import { deserializeMongoPayload, makePayloadLocalized } from "../utils";
 import { canUserCreateCollectionEntry } from "../access";
-import { getPayloadWithDerivedFields } from "./utils";
+import { getPayloadWithDerivedFields, validateDocForDataType } from "./utils";
 
 export function isCollectionEntryCreationEndpoint(req: NextApiRequest) {
   const [typeKind] = req.query.catalyst as string[];
@@ -44,7 +44,11 @@ export async function handleCollectionEntryCreation(
     });
   }
 
-  // TODO: Validate using field zod schema
+  const validationResult = validateDocForDataType(collection, json);
+
+  if (!validationResult.success) {
+    return res.status(400).json(validationResult);
+  }
 
   // Run creation hooks
   if (collection.hooks && collection.hooks.beforeCreate) {

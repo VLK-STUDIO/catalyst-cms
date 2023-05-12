@@ -12,17 +12,28 @@ type Props = {
 };
 
 export const FormElements: React.FC<Props> = ({ form, fields }) => {
-  const { register, getValues, setValue, control } = form;
+  const { getValues, setValue, control } = form;
 
   return (
     <>
-      {fields.map((field) => {
+      {fields.map(field => {
         if (field.type === "text") {
           return (
-            <TextInput
+            <Controller
+              control={control}
+              name={field.name}
               key={field.name}
-              label={field.label}
-              {...register(field.name)}
+              render={({ field: f, fieldState }) => (
+                <TextInput
+                  key={f.name}
+                  label={field.label}
+                  onChange={f.onChange}
+                  onBlur={f.onBlur}
+                  value={f.value}
+                  name={f.name}
+                  error={fieldState.error?.message}
+                />
+              )}
             />
           );
         } else if (field.type === "richtext") {
@@ -31,7 +42,7 @@ export const FormElements: React.FC<Props> = ({ form, fields }) => {
               key={field.name}
               label={field.label}
               defaultValue={getValues(field.name)}
-              onChange={(value) => setValue(field.name, value)}
+              onChange={value => setValue(field.name, value)}
             />
           );
         } else if (field.type === "select") {

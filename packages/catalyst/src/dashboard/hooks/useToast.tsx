@@ -30,6 +30,7 @@ export function useToast() {
         "!p-2 bg-gray-100 border-l-8 border border-gray-300",
         selectedStyle
       ),
+      bodyClassName: "pr-4",
       hideProgressBar: true,
       autoClose: 2500
     });
