@@ -43,7 +43,7 @@ export const TableBody: React.FC<Props> = ({
           {exposedFields.length > 0 ? (
             exposedFields.map(([fieldKey, field]) => {
               return (
-                <td key={fieldKey} className="py-2 text-gray-600">
+                <td key={fieldKey} className="truncate py-2 text-gray-600">
                   {fieldMap[field.type](doc, {
                     ...field,
                     key: fieldKey
