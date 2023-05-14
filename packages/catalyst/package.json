@@ -9,7 +9,7 @@
   "scripts": {
     "watch": "pnpm tailwind --watch",
     "build": "pnpm tailwind --minify",
-    "tailwind": "tailwindcss -o src/dashboard/__generated.css"
+    "tailwind": "tailwindcss -o src/ui/__generated.css"
   },
   "dependencies": {
     "@next-auth/mongodb-adapter": "^1.1.3",

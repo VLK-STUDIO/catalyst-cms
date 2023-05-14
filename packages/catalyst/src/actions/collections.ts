@@ -15,7 +15,7 @@ export async function createCollectionEntry(
   const collection = catalystInstance.config.collections[collectionName];
 
   if (!collection) {
-    logError(`Creation failed: ollection '${collectionName}' does not exist`);
+    logError(`Creation failed: collection '${collectionName}' does not exist`);
 
     return {
       success: false,
