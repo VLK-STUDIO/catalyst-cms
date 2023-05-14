@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { CatalystCms, CatalystConfig } from "../types";
 import { LoginRoute } from "./routes/login";
-import { IndexRoute } from "./routes/index";
+import { IndexRoute } from "./routes/index/route";
 import { BrowseRoute } from "./routes/browse";
 import { RouteProps } from "./routes/types";
 import { CreateRoute } from "./routes/create";

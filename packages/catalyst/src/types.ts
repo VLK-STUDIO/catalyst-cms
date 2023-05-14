@@ -3,8 +3,9 @@ import { CatalystDataObject } from "./data/types";
 import { Provider } from "next-auth/providers";
 
 export type CatalystCms = {
-  data: CatalystDataObject;
+  data: CatalystDataObject<any>;
   auth: CatalystAuth;
+  config: CatalystConfig;
 };
 
 export type UserCatalystConfig = Optional<CatalystConfig, "i18n">;
@@ -71,7 +72,7 @@ export type CatalystAuth = ReturnType<typeof createCatalystAuthObject>;
 
 type CatalystAccessControlFunction = (user: any) => boolean;
 
-export type CatalystFields<C extends CatalystConfig> = {
+export type CatalystFields<C extends CatalystConfig = CatalystConfig> = {
   [K: string]: CatalystField<C>;
 };
 
@@ -125,6 +126,18 @@ export type CatalystReferenceField<C extends CatalystConfig = CatalystConfig> =
   };
 
 export type CatalystValidationError = Record<string, string>;
+
+export type ActionResult =
+  | {
+      success: true;
+    }
+  | {
+      success: false;
+      error: {
+        message: string;
+        field?: string;
+      };
+    };
 
 type CatalystFieldBase = {
   label: string;

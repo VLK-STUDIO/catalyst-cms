@@ -3,6 +3,7 @@ import { Form } from "../components/_shared/Form/Form";
 import { getFormFieldsFromDataType } from "../utils";
 import { canUserCreateCollectionEntry } from "../../access";
 import { RouteProps } from "./types";
+import { createCollectionEntry } from "../../actions/collections";
 
 export async function CreateRoute({ config, session, params }: RouteProps) {
   const [_, collectionName] = params;
@@ -15,17 +16,22 @@ export async function CreateRoute({ config, session, params }: RouteProps) {
 
   const fields = await getFormFieldsFromDataType(collection);
 
+  const action = async (edits: Record<string, unknown>) => {
+    "use server";
+
+    const [_, collectionName] = params;
+
+    return await createCollectionEntry(collectionName, edits);
+  };
+
   return (
-    <div className="flex h-full flex-col bg-gray-100">
-      <Form
-        typeName={collectionName}
-        fields={fields}
-        method="POST"
-        endpoint={`/api/collection/${collectionName}`}
-        submitText="Create"
-        title={`CREATE ${collection.label.toUpperCase()}`}
-        i18n={config.i18n}
-      />
-    </div>
+    <Form
+      action={action}
+      typeName={collectionName}
+      fields={fields}
+      submitText="Create"
+      title={`CREATE ${collection.label.toUpperCase()}`}
+      i18n={config.i18n}
+    />
   );
 }

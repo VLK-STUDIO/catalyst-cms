@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { ObjectId } from "mongodb";
 import { getComputedPreviewUrl } from "../../preview";
 import { RouteProps } from "./types";
+import { editCollectionEntry } from "../../actions/collections";
 
 export async function EditCollectionRoute({
   session,
@@ -14,6 +15,8 @@ export async function EditCollectionRoute({
   searchParams
 }: RouteProps) {
   const [_, collectionName, docId] = params;
+
+  const locale = (searchParams ?? {}).locale ?? config.i18n.defaultLocale;
 
   const collection = config.collections[collectionName] || notFound();
 
@@ -37,12 +40,19 @@ export async function EditCollectionRoute({
     ? getComputedPreviewUrl(collection.previewUrl, doc)
     : undefined;
 
+  const action = async (edits: Record<string, unknown>) => {
+    "use server";
+
+    const [_, collectionName, docId] = params;
+
+    return await editCollectionEntry({ collectionName, docId }, edits, locale);
+  };
+
   return (
     <Form
+      action={action}
       fields={fields}
       i18n={config.i18n}
-      method="PATCH"
-      endpoint={`/api/collection/${collectionName}/${docId}`}
       submitText="Update"
       title={`EDIT ${collectionName}`}
       previewUrl={previewUrl}
