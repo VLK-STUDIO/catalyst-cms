@@ -3,7 +3,7 @@ import { Form } from "../components/_shared/Form/Form";
 import { getFormFieldsFromDataType } from "../utils";
 import { canUserCreateCollectionEntry } from "../../access";
 import { RouteProps } from "./types";
-import { createCollectionEntry } from "../../actions/collections";
+import { createCollectionEntryCreationAction } from "../../data/actions";
 
 export async function CreateRoute({ config, session, params }: RouteProps) {
   const [_, collectionName] = params;
@@ -16,12 +16,12 @@ export async function CreateRoute({ config, session, params }: RouteProps) {
 
   const fields = await getFormFieldsFromDataType(collection);
 
+  const createAction = createCollectionEntryCreationAction(collectionName);
+
   const action = async (edits: Record<string, unknown>) => {
     "use server";
 
-    const [_, collectionName] = params;
-
-    return await createCollectionEntry(collectionName, edits);
+    return await createAction(edits);
   };
 
   return (

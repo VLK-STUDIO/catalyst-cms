@@ -3,7 +3,7 @@ import { canUserUpdateDataType } from "../../access";
 import { Form } from "../components/_shared/Form";
 import { getFormFieldsFromDataType } from "../utils";
 import { RouteProps } from "./types";
-import { editGlobal } from "../../actions/globals";
+import { createGlobalUpdateAction } from "../../data/actions";
 
 export async function EditGlobalRoute({
   config,
@@ -28,12 +28,12 @@ export async function EditGlobalRoute({
 
   const fields = await getFormFieldsFromDataType(global, doc);
 
+  const updateAction = createGlobalUpdateAction(globalName);
+
   const action = async (edits: Record<string, unknown>) => {
     "use server";
 
-    const [_, globalName] = params;
-
-    return await editGlobal(globalName, edits, locale);
+    return await updateAction(edits, locale);
   };
 
   return (

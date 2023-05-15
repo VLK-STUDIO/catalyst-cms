@@ -35,7 +35,7 @@ export async function transformUserPayload(
 
   return {
     success: true,
-    doc: flatten(deserializedPayload)
+    doc: deserializedPayload
   };
 }
 

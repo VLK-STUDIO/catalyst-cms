@@ -52,14 +52,3 @@ export function canUserCreateCollectionEntry(
 
   return collection.access.create(user);
 }
-
-export function canUserDeleteCollectionEntry(
-  user: Session | null,
-  collection: CatalystCollection<any>
-) {
-  if (!collection.access) return true;
-
-  if (!collection.access.delete) return true;
-
-  return collection.access.delete(user);
-}

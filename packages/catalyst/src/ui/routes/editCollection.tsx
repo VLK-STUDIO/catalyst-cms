@@ -5,7 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { ObjectId } from "mongodb";
 import { getComputedPreviewUrl } from "../../preview";
 import { RouteProps } from "./types";
-import { editCollectionEntry } from "../../actions/collections";
+import { createCollectionEntryUpdateAction } from "../../data/actions";
 
 export async function EditCollectionRoute({
   session,
@@ -25,7 +25,6 @@ export async function EditCollectionRoute({
   }
 
   const doc = await cms.data[collectionName].findOne({
-    // @ts-ignore
     filters: {
       _id: {
         $eq: new ObjectId(docId)
@@ -40,12 +39,14 @@ export async function EditCollectionRoute({
     ? getComputedPreviewUrl(collection.previewUrl, doc)
     : undefined;
 
+  const updateAction = createCollectionEntryUpdateAction(collectionName);
+
   const action = async (edits: Record<string, unknown>) => {
     "use server";
 
-    const [_, collectionName, docId] = params;
+    const [_, __, docId] = params;
 
-    return await editCollectionEntry({ collectionName, docId }, edits, locale);
+    return await updateAction(docId, edits, locale);
   };
 
   return (
