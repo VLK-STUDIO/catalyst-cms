@@ -3,8 +3,9 @@ import { CatalystDataObject } from "./data/types";
 import { Provider } from "next-auth/providers";
 
 export type CatalystCms = {
-  data: CatalystDataObject;
+  data: CatalystDataObject<any>;
   auth: CatalystAuth;
+  config: CatalystConfig;
 };
 
 export type UserCatalystConfig = Optional<CatalystConfig, "i18n">;
@@ -42,23 +43,6 @@ export type CatalystCollection<C extends CatalystConfig = CatalystConfig> =
     };
   };
 
-export type CatalystGlobal<C extends CatalystConfig> =
-  CatalystBaseDataType<C> & {
-    access?: {
-      read?: CatalystAccessControlFunction;
-      update?: CatalystAccessControlFunction;
-    };
-    hooks?: {
-      beforeUpdate?: (data: any) => any;
-    };
-  };
-
-export type CatalystBaseDataType<C extends CatalystConfig> = {
-  label: string;
-  previewUrl?: string;
-  fields: CatalystFields<C>;
-};
-
 export type CatalystAuthConfig = {
   whitelist: {
     collection: string;
@@ -69,9 +53,7 @@ export type CatalystAuthConfig = {
 
 export type CatalystAuth = ReturnType<typeof createCatalystAuthObject>;
 
-type CatalystAccessControlFunction = (user: any) => boolean;
-
-export type CatalystFields<C extends CatalystConfig> = {
+export type CatalystFields<C extends CatalystConfig = CatalystConfig> = {
   [K: string]: CatalystField<C>;
 };
 
@@ -93,9 +75,7 @@ export type CatalystDerivedField = CatalystFieldBase & {
   validate?: CatalystFieldValidationFunction<any>;
 };
 
-export type CatalystFieldType = CatalystField<CatalystConfig>["type"];
-
-export type CatalystSelectField = CatalystFieldBase & {
+type CatalystSelectField = CatalystFieldBase & {
   type: "select";
   localized?: boolean;
   options: readonly { label: string; value: string }[];
@@ -124,7 +104,35 @@ export type CatalystReferenceField<C extends CatalystConfig = CatalystConfig> =
     validate?: CatalystFieldValidationFunction<any>;
   };
 
-export type CatalystValidationError = Record<string, string>;
+export type ActionResult =
+  | {
+      success: true;
+    }
+  | {
+      success: false;
+      error: {
+        message: string;
+        field?: string;
+      };
+    };
+
+type CatalystGlobal<C extends CatalystConfig> = CatalystBaseDataType<C> & {
+  access?: {
+    read?: CatalystAccessControlFunction;
+    update?: CatalystAccessControlFunction;
+  };
+  hooks?: {
+    beforeUpdate?: (data: any) => any;
+  };
+};
+
+type CatalystBaseDataType<C extends CatalystConfig> = {
+  label: string;
+  previewUrl?: string;
+  fields: CatalystFields<C>;
+};
+
+type CatalystAccessControlFunction = (user: any) => boolean;
 
 type CatalystFieldBase = {
   label: string;

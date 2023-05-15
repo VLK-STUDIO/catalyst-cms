@@ -9,7 +9,7 @@ import { LogoutRoute } from "./routes/logout";
 import { EditCollectionRoute } from "./routes/editCollection";
 import { EditGlobalRoute } from "./routes/editGlobal";
 import { ForbiddenRoute } from "./routes/forbidden";
-import { ToastProvider } from "./components/_shared/Toast/ToastProvider";
+import { ToastProvider } from "./components/_shared/Toast";
 import "./__generated.css";
 
 const ROUTE_MAP: Record<

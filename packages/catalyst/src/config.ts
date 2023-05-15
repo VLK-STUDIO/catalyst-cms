@@ -4,11 +4,23 @@ import {
   CatalystFields,
   UserCatalystConfig
 } from "./types";
-import { createDashboard } from "./dashboard";
+import { createDashboard } from "./ui";
 import { createCatalystAuthObject } from "./auth";
 import { createCatalystDataObject } from "./data";
-import { createRootEndpoint } from "./endpoints";
+import { createRootEndpoint } from "./endpoint";
 
+/*
+ * Singleton to hold reference to the catalyst
+ * object outside the main closure.
+ */
+export let catalystInstance: CatalystCms;
+
+/**
+ * Main library entry point. Creates a Catalyst CMS object.
+ *
+ * @param userConfig Minimal configuration object for Catalyst CMS
+ * @returns A Catalyst CMS object
+ */
 export function createCatalyst<const C extends UserCatalystConfig>(
   userConfig: C
 ) {
@@ -18,9 +30,15 @@ export function createCatalyst<const C extends UserCatalystConfig>(
 
   const data = createCatalystDataObject(config, auth);
 
-  const rootEndpoint = createRootEndpoint(config, auth);
+  const rootEndpoint = createRootEndpoint(auth);
 
   const rootPage = createDashboard({ data, auth } as CatalystCms, config);
+
+  catalystInstance = {
+    data,
+    auth,
+    config
+  };
 
   return {
     rootEndpoint,
@@ -31,10 +49,9 @@ export function createCatalyst<const C extends UserCatalystConfig>(
 }
 
 function getConfigWithDefaults<const C extends UserCatalystConfig>(config: C) {
-  const updatedConfigCollections = normalizeCollections(config);
   return {
     ...config,
-    collections: updatedConfigCollections,
+    collections: getCollectionsWithDefaults(config.collections),
     i18n: {
       defaultLocale: "en",
       locales: ["en"],
@@ -43,23 +60,21 @@ function getConfigWithDefaults<const C extends UserCatalystConfig>(config: C) {
   };
 }
 
-function normalizeCollections(config: UserCatalystConfig) {
-  const updatedCollectionFields = Object.entries(config.collections).reduce(
-    (acc, [key, collection]) => {
-      return {
-        ...acc,
-        [key]: {
-          ...collection,
-          fields: getFieldWithExposed(collection.fields)
-        }
-      };
-    },
-    {}
-  );
-  return updatedCollectionFields;
+function getCollectionsWithDefaults(
+  collections: CatalystConfig["collections"]
+) {
+  return Object.entries(collections).reduce((acc, [key, collection]) => {
+    return {
+      ...acc,
+      [key]: {
+        ...collection,
+        fields: getFieldsWithDefaults(collection.fields)
+      }
+    };
+  }, {});
 }
 
-function getFieldWithExposed(fields: CatalystFields<CatalystConfig>) {
+function getFieldsWithDefaults(fields: CatalystFields) {
   return Object.entries(fields).reduce((acc, [key, field]) => {
     if (field.exposed === undefined) {
       return {
@@ -70,8 +85,7 @@ function getFieldWithExposed(fields: CatalystFields<CatalystConfig>) {
         }
       };
     }
-    return {
-      ...acc
-    };
+
+    return acc;
   }, {});
 }

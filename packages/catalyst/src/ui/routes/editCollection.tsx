@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { ObjectId } from "mongodb";
 import { getComputedPreviewUrl } from "../../preview";
 import { RouteProps } from "./types";
+import { createCollectionEntryUpdateAction } from "../../data/actions";
 
 export async function EditCollectionRoute({
   session,
@@ -15,6 +16,8 @@ export async function EditCollectionRoute({
 }: RouteProps) {
   const [_, collectionName, docId] = params;
 
+  const locale = (searchParams ?? {}).locale ?? config.i18n.defaultLocale;
+
   const collection = config.collections[collectionName] || notFound();
 
   if (!canUserUpdateDataType(session, collection)) {
@@ -22,7 +25,6 @@ export async function EditCollectionRoute({
   }
 
   const doc = await cms.data[collectionName].findOne({
-    // @ts-ignore
     filters: {
       _id: {
         $eq: new ObjectId(docId)
@@ -37,12 +39,21 @@ export async function EditCollectionRoute({
     ? getComputedPreviewUrl(collection.previewUrl, doc)
     : undefined;
 
+  const updateAction = createCollectionEntryUpdateAction(collectionName);
+
+  const action = async (edits: Record<string, unknown>) => {
+    "use server";
+
+    const [_, __, docId] = params;
+
+    return await updateAction(docId, edits, locale);
+  };
+
   return (
     <Form
+      action={action}
       fields={fields}
       i18n={config.i18n}
-      method="PATCH"
-      endpoint={`/api/collection/${collectionName}/${docId}`}
       submitText="Update"
       title={`EDIT ${collectionName}`}
       previewUrl={previewUrl}

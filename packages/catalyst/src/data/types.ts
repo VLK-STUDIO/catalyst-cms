@@ -1,5 +1,6 @@
 import { Filter } from "mongodb";
 import {
+  ActionResult,
   CatalystConfig,
   CatalystDerivedField,
   CatalystField,
@@ -18,6 +19,8 @@ export type CatalystCollectionDataObject<C extends CatalystConfig> = {
     findOneAsUser: CatalystFindOneDataFunction<C, K>;
     find: CatalystFindDataFunction<C, K>;
     findOne: CatalystFindOneDataFunction<C, K>;
+    create: CatalystCreateDataFunction<C, K>;
+    updateOne: CatalystUpdateOneDataFunction<C, K>;
   };
 };
 
@@ -27,6 +30,21 @@ export type CatalystGlobalsDataObject<C extends CatalystConfig> = {
     get: CatalystGetDataFunction<C, K>;
   };
 };
+
+type CatalystUpdateOneDataFunction<
+  C extends CatalystConfig,
+  K extends keyof C["collections"]
+> = (
+  id: string,
+  data: Partial<ComputedCatalystFields<C, C["collections"][K]["fields"]>>
+) => Promise<ActionResult>;
+
+type CatalystCreateDataFunction<
+  C extends CatalystConfig,
+  K extends keyof C["collections"]
+> = (
+  data: ComputedCatalystFields<C, C["collections"][K]["fields"]>
+) => Promise<ActionResult>;
 
 export type CatalystFindDataFunction<
   C extends CatalystConfig,
@@ -64,7 +82,7 @@ export type CatalystGetDataFunction<
   >
 ) => Promise<ComputedCatalystFields<C, C["globals"][K]["fields"]>>;
 
-export type ComputedCatalystFields<
+type ComputedCatalystFields<
   C extends CatalystConfig,
   F extends CatalystFields<C>
 > = {

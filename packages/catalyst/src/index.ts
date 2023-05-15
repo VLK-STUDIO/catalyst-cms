@@ -1,4 +1,4 @@
-import GoogleProvider from "next-auth/providers/google";
-
 export { createCatalyst } from "./config";
-export { GoogleProvider };
+
+export { default as GoogleProvider } from "next-auth/providers/google";
+export { default as GithubProvider } from "next-auth/providers/github";

@@ -1,47 +1,49 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import clsx from "clsx";
+import { useState } from "react";
 import { Button } from "../Button";
-import { useSearchParams } from "next/navigation";
 import { LocaleSwitch } from "./LocaleSwitch";
 import { LivePreviewFrame } from "./LivePreviewFrame";
 import { FormElements } from "./FormElements";
-import { useMemo, useState } from "react";
 import { FormField } from "./types";
-import clsx from "clsx";
 import { getObjectWithDepopulatedReferences } from "./utils";
 import { useToast } from "../../../hooks/useToast";
 
 type Props = {
+  action: (edits: Record<string, unknown>) => Promise<
+    | { success: true }
+    | {
+        success: false;
+        error: {
+          message: string;
+          field?: string;
+        };
+      }
+  >;
   fields: FormField[];
-  endpoint: string;
-  method: "POST" | "PATCH";
   submitText: string;
   title: string;
   previewUrl?: string;
+  typeName: string;
   i18n: {
     locales: readonly string[];
     defaultLocale: string;
   };
-  typeName: string;
 };
 
 export const Form: React.FC<Props> = ({
   fields,
-  endpoint,
-  method,
   submitText,
   title,
   previewUrl,
   i18n,
-  typeName
+  typeName,
+  action
 }) => {
-  const params = useSearchParams();
   const { showToast } = useToast();
-  const locale = useMemo(
-    () => (params ? params.get("locale") : null),
-    [params]
-  );
+
   const [pending, setPending] = useState(false);
 
   const form = useForm({
@@ -56,32 +58,40 @@ export const Form: React.FC<Props> = ({
 
     setPending(true);
 
-    const res = await fetch(`${endpoint}${locale ? `?locale=${locale}` : ""}`, {
-      method,
-      body: JSON.stringify(depopulatedData)
-    });
-
-    if (!res.ok) {
-      if (res.status === 400) {
-        const { error, field } = await res.json();
-
-        if (field) {
-          form.setError(field, { message: error });
+    let res;
+    try {
+      res = await action(depopulatedData);
+    } catch {
+      res = {
+        success: false,
+        error: {
+          message: "Network error. Try again."
         }
-
-        showToast({
-          title: "Validation error",
-          description: error,
-          type: "error"
-        });
-      } else {
-        showToast({ title: "Something went wrong. Try again.", type: "error" });
-      }
-    } else {
-      showToast({ title: "Operation complete!", type: "success" });
+      };
+    } finally {
+      setPending(false);
     }
 
-    setPending(false);
+    if ("error" in res) {
+      if ("field" in res.error) {
+        form.setError(`root.${res.error.field}`, {
+          message: res.error.message
+        });
+
+        return showToast({
+          title: "Validation error",
+          description: res.error.message,
+          type: "error"
+        });
+      }
+
+      return showToast({
+        title: "Something went wrong. Try again.",
+        type: "error"
+      });
+    }
+
+    showToast({ title: "Operation complete!", type: "success" });
   });
 
   const liveData = form.watch();

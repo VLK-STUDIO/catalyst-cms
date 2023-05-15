@@ -1,6 +1,6 @@
 export type FormField = TextFormField | RichTextFormField | SelectFormField;
 
-export type SelectFormField = FormFieldBase & {
+type SelectFormField = FormFieldBase & {
   type: "select";
   value: string;
   options: readonly {
@@ -9,7 +9,7 @@ export type SelectFormField = FormFieldBase & {
   }[];
 };
 
-export type RichTextFormField = FormFieldBase & {
+type RichTextFormField = FormFieldBase & {
   type: "richtext";
   value: string;
 };

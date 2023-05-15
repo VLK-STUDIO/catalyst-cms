@@ -1,37 +1,7 @@
 import { ObjectId } from "mongodb";
 import _ from "lodash";
 import { logWarning } from "./logger";
-import {
-  CatalystConfig,
-  CatalystFieldType,
-  CatalystFields,
-  UserCatalystConfig
-} from "./types";
-
-/**
- * Applies the given locale to a payload
- * for every field that has `localized` set to `true`.
- *
- * @param payload The payload to localize
- * @param locale The locale to apply
- * @param collectionFields The fields of the collection
- * @returns The localized payload
- */
-export const makePayloadLocalized = (
-  payload: any,
-  locale: string,
-  collectionFields: CatalystFields<any>
-) => {
-  return Object.fromEntries(
-    Object.entries(payload).map(([key, value]) => {
-      if ("localized" in collectionFields[key]) {
-        return [key, { [locale]: value }];
-      }
-
-      return [key, value];
-    })
-  );
-};
+import { CatalystFields } from "./types";
 
 /**
  * Flattens a document by removing the nested objects
@@ -88,7 +58,7 @@ export const delocalizePayload = (
  * @param dataTypeFields A map of field names to their data types
  * @returns payload with Object IDs converted to strings
  */
-export const makeMongoPayloadSerializable = (
+export const getMongoPayloadAsSerializable = (
   payload: any,
   dataTypeFields: CatalystFields<any>
 ) => {
@@ -105,36 +75,6 @@ export const makeMongoPayloadSerializable = (
       return [key, value];
     })
   ) as any;
-};
-
-/**
- * Deserializes a MongoDB document sent by client components
- * by converting all strings to ObjectIds to be stored in the DB.
- *
- * @param payload Anything with Object IDs
- * @param dataTypeFields A map of field names to their data types
- * @returns payload with Object IDs converted to strings
- */
-export const deserializeMongoPayload = (
-  payload: any,
-  dataTypeFields: CatalystFields<any>
-) => {
-  return Object.fromEntries(
-    Object.entries(payload).map(([key, value]) => {
-      const field = dataTypeFields[key];
-
-      if (field && field.type === "reference") {
-        if (typeof value !== "string")
-          throw new Error(
-            `Expected a string for reference field '${key}', but got '${typeof value}'.`
-          );
-
-        return [key, new ObjectId(value)];
-      }
-
-      return [key, value];
-    })
-  );
 };
 
 /**
