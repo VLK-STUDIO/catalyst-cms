@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { CatalystCms, CatalystConfig } from "../types";
 import { LoginRoute } from "./routes/login";
-import { IndexRoute } from "./routes/index/route";
+import { IndexRoute } from "./routes/index";
 import { BrowseRoute } from "./routes/browse";
 import { RouteProps } from "./routes/types";
 import { CreateRoute } from "./routes/create";
@@ -9,7 +9,7 @@ import { LogoutRoute } from "./routes/logout";
 import { EditCollectionRoute } from "./routes/editCollection";
 import { EditGlobalRoute } from "./routes/editGlobal";
 import { ForbiddenRoute } from "./routes/forbidden";
-import { ToastProvider } from "./components/_shared/Toast/ToastProvider";
+import { ToastProvider } from "./components/_shared/Toast";
 import "./__generated.css";
 
 const ROUTE_MAP: Record<

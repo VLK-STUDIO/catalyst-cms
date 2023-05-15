@@ -2,12 +2,6 @@ import { ToastPosition, toast } from "react-toastify";
 import clsx from "clsx";
 import { Toast, ToastProps, ToastType } from "../components/_shared/Toast";
 
-export type ToastContent = {
-  type: ToastType;
-  title: string;
-  message?: string;
-};
-
 type ShowToastAttributes = ToastProps & { position?: ToastPosition };
 
 const containerStyleMap: Record<ToastType, string> = {

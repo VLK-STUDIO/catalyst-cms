@@ -7,7 +7,7 @@ import {
   QueryOptions
 } from "./types";
 import { canUserReadDataType } from "../access";
-import { delocalizePayload, makeMongoPayloadSerializable } from "../utils";
+import { delocalizePayload, getMongoPayloadAsSerializable } from "../utils";
 import { getLivePreviewDataForCollection } from "../preview";
 
 export function createFindAsUserFunction(
@@ -91,7 +91,7 @@ export function createFindFunction(
       .toArray();
 
     return docs.map(doc =>
-      makeMongoPayloadSerializable(
+      getMongoPayloadAsSerializable(
         delocalizePayload(
           doc,
           collection.fields,
@@ -133,7 +133,7 @@ export function createFindOneFunction<C extends CatalystConfig>(
       .toArray();
 
     return docs.map(doc =>
-      makeMongoPayloadSerializable(
+      getMongoPayloadAsSerializable(
         delocalizePayload(
           doc,
           collection.fields,
@@ -194,7 +194,7 @@ export function createGetFunction(config: CatalystConfig, globalKey: string) {
       .toArray();
 
     return docs.map(doc =>
-      makeMongoPayloadSerializable(
+      getMongoPayloadAsSerializable(
         delocalizePayload(
           doc,
           global.fields,

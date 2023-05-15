@@ -82,7 +82,7 @@ export type CatalystGetDataFunction<
   >
 ) => Promise<ComputedCatalystFields<C, C["globals"][K]["fields"]>>;
 
-export type ComputedCatalystFields<
+type ComputedCatalystFields<
   C extends CatalystConfig,
   F extends CatalystFields<C>
 > = {

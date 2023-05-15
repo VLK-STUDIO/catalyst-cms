@@ -43,23 +43,6 @@ export type CatalystCollection<C extends CatalystConfig = CatalystConfig> =
     };
   };
 
-export type CatalystGlobal<C extends CatalystConfig> =
-  CatalystBaseDataType<C> & {
-    access?: {
-      read?: CatalystAccessControlFunction;
-      update?: CatalystAccessControlFunction;
-    };
-    hooks?: {
-      beforeUpdate?: (data: any) => any;
-    };
-  };
-
-export type CatalystBaseDataType<C extends CatalystConfig> = {
-  label: string;
-  previewUrl?: string;
-  fields: CatalystFields<C>;
-};
-
 export type CatalystAuthConfig = {
   whitelist: {
     collection: string;
@@ -69,8 +52,6 @@ export type CatalystAuthConfig = {
 };
 
 export type CatalystAuth = ReturnType<typeof createCatalystAuthObject>;
-
-type CatalystAccessControlFunction = (user: any) => boolean;
 
 export type CatalystFields<C extends CatalystConfig = CatalystConfig> = {
   [K: string]: CatalystField<C>;
@@ -96,7 +77,7 @@ export type CatalystDerivedField = CatalystFieldBase & {
 
 export type CatalystFieldType = CatalystField<CatalystConfig>["type"];
 
-export type CatalystSelectField = CatalystFieldBase & {
+type CatalystSelectField = CatalystFieldBase & {
   type: "select";
   localized?: boolean;
   options: readonly { label: string; value: string }[];
@@ -138,6 +119,24 @@ export type ActionResult =
         field?: string;
       };
     };
+
+type CatalystGlobal<C extends CatalystConfig> = CatalystBaseDataType<C> & {
+  access?: {
+    read?: CatalystAccessControlFunction;
+    update?: CatalystAccessControlFunction;
+  };
+  hooks?: {
+    beforeUpdate?: (data: any) => any;
+  };
+};
+
+type CatalystBaseDataType<C extends CatalystConfig> = {
+  label: string;
+  previewUrl?: string;
+  fields: CatalystFields<C>;
+};
+
+type CatalystAccessControlFunction = (user: any) => boolean;
 
 type CatalystFieldBase = {
   label: string;
